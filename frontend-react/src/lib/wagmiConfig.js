@@ -26,23 +26,19 @@ const base = {
   },
 }
 
-// Binance Web3 Wallet — in Binance App, window.ethereum IS the Binance provider
+// Official Binance Web3 Wallet provider detection
+// See: https://developers.binance.com/docs/binance-w3w/evm-compatible-provider
 const binanceWallet = injected({
   target: {
-    id: 'binanceWeb3Wallet',
+    id: 'wallet.binance.com',
     name: 'Binance Web3 Wallet',
     provider: () => {
       if (typeof window === 'undefined') return undefined
-      // Check for explicit Binance provider
+      // Official: window.binancew3w.ethereum
+      if (window.binancew3w?.ethereum) return window.binancew3w.ethereum
+      // Fallback: older Binance App versions
       if (window.ethereum?.isBinance) return window.ethereum
-      if (window.ethereum?.providers) {
-        const bp = window.ethereum.providers.find(p => p.isBinance)
-        if (bp) return bp
-      }
       if (window.BinanceChain) return window.BinanceChain
-      // In Binance App DApp browser, window.ethereum is the Binance provider
-      // but may not have isBinance flag — fall back to it
-      if (window.ethereum) return window.ethereum
       return undefined
     },
   },
