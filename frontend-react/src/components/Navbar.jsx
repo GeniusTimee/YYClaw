@@ -47,7 +47,7 @@ export default function Navbar() {
     <>
       <nav style={styles.nav}>
         <span style={styles.logo} onClick={() => navigate('/')}>
-          <img src="/icons/yyclaw-logo.jpg" alt="YYClaw" style={{ width: 32, height: 32, borderRadius: '50%', marginRight: 10, verticalAlign: 'middle' }} />
+          <img src="/icons/yyclaw-logo.png" alt="YYClaw" style={{ width: 32, height: 32, borderRadius: '50%', marginRight: 10, verticalAlign: 'middle' }} />
           <span style={{ background: 'linear-gradient(135deg, #FFF8E1, #F0B90B, #E8A800)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', filter: 'drop-shadow(0 2px 8px rgba(240,185,11,0.15))' }}>YY</span>
           <span style={{ color: '#EAECEF' }}>Claw</span>
         </span>
