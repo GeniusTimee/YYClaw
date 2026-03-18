@@ -134,6 +134,44 @@ router.post('/chat/completions', requireApiKey, async (req, res) => {
   }
 });
 
+// GET /v1/balance — check on-chain allowance with API key
+router.get('/balance', requireApiKey, async (req, res) => {
+  const { getAllowance } = require('../lib/onchain');
+  const addr = req.user.wallet_address;
+  let totalAllowance = 0;
+  const details = {};
+  for (const chain of ['bsc', 'base']) {
+    try {
+      const a = await getAllowance(chain, addr);
+      details[chain] = a;
+      totalAllowance += a;
+    } catch { details[chain] = 0; }
+  }
+  const stats = db.prepare(
+    "SELECT COUNT(*) as calls, COALESCE(SUM(cost), 0) as spent FROM call_logs WHERE user_id = ? AND status LIKE 'success%'"
+  ).get(req.user.id);
+  res.json({
+    balance: totalAllowance,
+    spent: stats?.spent || 0,
+    remaining: Math.max(totalAllowance - (stats?.spent || 0), 0),
+    calls: stats?.calls || 0,
+    chains: details,
+    wallet: addr,
+  });
+});
+
+// GET /v1/usage — call logs with API key
+router.get('/usage', requireApiKey, (req, res) => {
+  const limit = Math.min(parseInt(req.query.limit) || 20, 100);
+  const logs = db.prepare(
+    'SELECT model, cost, status, created_at FROM call_logs WHERE user_id = ? ORDER BY created_at DESC LIMIT ?'
+  ).all(req.user.id, limit);
+  const stats = db.prepare(
+    "SELECT COUNT(*) as calls, COALESCE(SUM(cost), 0) as spent FROM call_logs WHERE user_id = ? AND status LIKE 'success%'"
+  ).get(req.user.id);
+  res.json({ total_calls: stats?.calls || 0, total_spent: stats?.spent || 0, logs });
+});
+
 // GET /v1/models
 router.get('/models', (req, res) => {
   const models = db.prepare('SELECT name, price_per_call FROM models WHERE enabled = 1').all();

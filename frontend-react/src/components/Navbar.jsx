@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { useAccount, useDisconnect } from 'wagmi'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { useLang } from '../context/LanguageContext'
 import WalletModal from './WalletModal'
 
 const styles = {
@@ -31,6 +32,11 @@ const styles = {
     fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8,
   },
   dot: { width: 8, height: 8, borderRadius: '50%', background: '#0ECB81' },
+  langBtn: {
+    background: 'transparent', border: '1px solid #2B3139', borderRadius: 6,
+    padding: '5px 12px', color: '#848E9C', fontSize: 13, fontWeight: 600,
+    cursor: 'pointer', transition: 'all 0.15s',
+  },
 }
 
 export default function Navbar() {
@@ -38,6 +44,7 @@ export default function Navbar() {
   const { disconnect } = useDisconnect()
   const navigate = useNavigate()
   const location = useLocation()
+  const { lang, toggleLang, t } = useLang()
   const [showModal, setShowModal] = useState(false)
   const [showMenu, setShowMenu] = useState(false)
 
@@ -53,11 +60,30 @@ export default function Navbar() {
         </span>
         <div style={styles.links}>
           {location.pathname !== '/' && (
-            <span style={styles.link} onClick={() => navigate('/')}>Home</span>
+            <span style={styles.link} onClick={() => navigate('/')}>{t('home')}</span>
           )}
-          <span style={styles.link} onClick={() => navigate('/dashboard')}>Dashboard</span>
-          <a href="#docs" style={styles.link}>Docs</a>
-          <a href="#pricing" style={styles.link}>Pricing</a>
+          <span style={styles.link} onClick={() => navigate('/dashboard')}>{t('dashboard')}</span>
+          <span style={styles.link} onClick={() => {
+            if (location.pathname === '/dashboard') {
+              window.dispatchEvent(new CustomEvent('yyclaw-tab', { detail: 'docs' }))
+            } else {
+              document.getElementById('docs')?.scrollIntoView({ behavior: 'smooth' })
+            }
+          }}>{t('docs')}</span>
+          <span style={styles.link} onClick={() => {
+            if (location.pathname === '/dashboard') {
+              navigate('/')
+              setTimeout(() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' }), 100)
+            } else {
+              document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })
+            }
+          }}>{t('pricing')}</span>
+
+          {/* Language toggle */}
+          <button style={styles.langBtn} onClick={toggleLang}>
+            {lang === 'en' ? '中文' : 'EN'}
+          </button>
+
           {isConnected ? (
             <div style={{ position: 'relative' }}>
               <button style={styles.addrBtn} onClick={() => setShowMenu(v => !v)}>
@@ -75,16 +101,16 @@ export default function Navbar() {
                   <div
                     style={{ padding: '10px 16px', fontSize: 14, color: '#EAECEF', cursor: 'pointer' }}
                     onClick={() => { navigate('/dashboard'); setShowMenu(false) }}
-                  >Dashboard</div>
+                  >{t('dashboard')}</div>
                   <div
                     style={{ padding: '10px 16px', fontSize: 14, color: '#F6465D', cursor: 'pointer' }}
                     onClick={() => { disconnect(); setShowMenu(false) }}
-                  >Disconnect</div>
+                  >{t('disconnect')}</div>
                 </div>
               )}
             </div>
           ) : (
-            <button style={styles.btn} onClick={() => setShowModal(true)}>Connect Wallet</button>
+            <button style={styles.btn} onClick={() => setShowModal(true)}>{t('connectWallet')}</button>
           )}
         </div>
       </nav>
