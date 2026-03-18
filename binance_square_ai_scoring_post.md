@@ -55,8 +55,8 @@ YYClaw 就是为此而生 —— 一个部署在 BSC 上的 AI API Gateway：
 
 `YYClawSpender.sol`（Solidity ^0.8.20，solc 0.8.34 编译，optimizer 200 runs）
 
-- 已部署 BSC：[0x530eF6EaaB683d099F6653e943806f3aA603d173](https://bscscan.com/address/0x530eF6EaaB683d099F6653e943806f3aA603d173)
-- 已部署 Base：[0x0425fE170491b2A9385681040Dd7848fade90b4B](https://basescan.org/address/0x0425fE170491b2A9385681040Dd7848fade90b4B)
+- 已部署 BSC：[0x30E57026c87072CFAc5B543bEA19ae1850D9bE68](https://bscscan.com/address/0x30E57026c87072CFAc5B543bEA19ae1850D9bE68)
+- 已部署 Base：[0x30E57026c87072CFAc5B543bEA19ae1850D9bE68](https://basescan.org/address/0x30E57026c87072CFAc5B543bEA19ae1850D9bE68)
 
 合约功能：
 - `collectPayment()` — operator 调用，从用户钱包 transferFrom 到 treasury
@@ -160,7 +160,7 @@ git clone https://github.com/GeniusTimee/yyclaw-skill ~/.openclaw/workspace/skil
 - 📡 API：https://crypto.yyclaw.cc/v1
 - 🛠 Admin：https://crypto.yyclaw.cc/admin
 - 📦 Skill：https://github.com/GeniusTimee/yyclaw-skill
-- 📄 合约（BSC）：https://bscscan.com/address/0x530eF6EaaB683d099F6653e943806f3aA603d173
+- 📄 合约（BSC）：https://bscscan.com/address/0x30E57026c87072CFAc5B543bEA19ae1850D9bE68
 
 **体验步骤：**
 1. 打开 yyclaw.cc → Connect Wallet（推荐 Binance Web3 Wallet）

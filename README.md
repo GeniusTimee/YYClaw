@@ -226,7 +226,7 @@ Auto-selects best token across chains.
 
 | Contract | BSC | Base |
 |----------|-----|------|
-| YYClawSpender | [`0x530e...d173`](https://bscscan.com/address/0x530eF6EaaB683d099F6653e943806f3aA603d173) | [`0x0425...90b4B`](https://basescan.org/address/0x0425fE170491b2A9385681040Dd7848fade90b4B) |
+| YYClawSpender | [`0x530e...d173`](https://bscscan.com/address/0x30E57026c87072CFAc5B543bEA19ae1850D9bE68) | [`0x0425...90b4B`](https://basescan.org/address/0x30E57026c87072CFAc5B543bEA19ae1850D9bE68) |
 
 ---
 

@@ -1,10 +1,10 @@
 {
   "chain": "base",
   "chainId": 8453,
-  "address": "0x0425fE170491b2A9385681040Dd7848fade90b4B",
+  "address": "0x30E57026c87072CFAc5B543bEA19ae1850D9bE68",
   "operator": "0xDEa8B80013c3799C9136999F3Bb3e798162422FC",
   "treasury": "0xfc625b2afee95dccc219a91d8bf391398cbeec35",
   "deployer": "0xDEa8B80013c3799C9136999F3Bb3e798162422FC",
-  "txHash": "0xbce1044b52bbb02ebae794b0fa211b90ae4d50b61c43b3d32be685aa9e992ef4",
-  "deployedAt": "2026-03-18T13:18:42.087Z"
+  "txHash": "0x9d8cbb995dd2f6aadbe922dae0d0768e2d9c7fbd43d7686f684060a95a3c7210",
+  "deployedAt": "2026-03-18T15:33:43.495Z"
 }
