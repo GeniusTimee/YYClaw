@@ -4,8 +4,10 @@ import { useAccount, useSwitchChain } from 'wagmi'
 import { TOKENS, CHAINS, SPENDER_ADDRESS } from '../lib/contracts'
 
 const card = { background: '#181A20', border: '1px solid #2B3139', borderRadius: 12, padding: 24 }
+const iconImg = { width: 20, height: 20, borderRadius: '50%', objectFit: 'cover' }
 
 const chainBtnStyle = (active) => ({
+  display: 'flex', alignItems: 'center', gap: 8,
   padding: '6px 16px', borderRadius: 6, border: '1px solid',
   borderColor: active ? '#F0B90B' : '#2B3139',
   background: active ? 'rgba(240,185,11,0.12)' : 'transparent',
@@ -14,6 +16,7 @@ const chainBtnStyle = (active) => ({
 })
 
 const tokenBtnStyle = (active) => ({
+  display: 'flex', alignItems: 'center', gap: 8,
   padding: '6px 14px', borderRadius: 6, border: '1px solid',
   borderColor: active ? '#0ECB81' : '#2B3139',
   background: active ? 'rgba(14,203,129,0.1)' : 'transparent',
@@ -59,16 +62,18 @@ export default function ApprovePanel() {
       <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
         {Object.entries(CHAINS).map(([key, c]) => (
           <button key={key} style={chainBtnStyle(chain === key)} onClick={() => handleChainSwitch(key)}>
+            <img src={c.icon} alt={c.name} style={iconImg} />
             {c.name}
           </button>
         ))}
       </div>
 
       {/* Token selector */}
-      <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
         {tokens.map((t, i) => (
           <button key={t.symbol} style={tokenBtnStyle(tokenIdx === i)} onClick={() => { setTokenIdx(i); setAmount('50'); localStorage.setItem('yyclaw_token', t.symbol) }}>
-            {t.icon} {t.symbol}
+            <img src={t.icon} alt={t.symbol} style={iconImg} />
+            {t.symbol}
           </button>
         ))}
       </div>
@@ -77,14 +82,20 @@ export default function ApprovePanel() {
       <div style={{ display: 'flex', gap: 16, marginBottom: 20, flexWrap: 'wrap' }}>
         <div style={{ flex: 1, background: '#0B0E11', borderRadius: 8, padding: '12px 16px', minWidth: 140 }}>
           <div style={{ fontSize: 12, color: '#848E9C', marginBottom: 4 }}>Current Allowance</div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: '#F0B90B' }}>
-            {parseFloat(allowance).toFixed(2)} {token?.symbol}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <img src={token?.icon} alt="" style={{ width: 16, height: 16, borderRadius: '50%' }} />
+            <span style={{ fontSize: 18, fontWeight: 700, color: '#F0B90B' }}>
+              {parseFloat(allowance).toFixed(2)} {token?.symbol}
+            </span>
           </div>
         </div>
         <div style={{ flex: 1, background: '#0B0E11', borderRadius: 8, padding: '12px 16px', minWidth: 140 }}>
           <div style={{ fontSize: 12, color: '#848E9C', marginBottom: 4 }}>Wallet Balance</div>
-          <div style={{ fontSize: 18, fontWeight: 700, color: '#0ECB81' }}>
-            {parseFloat(balance).toFixed(2)} {token?.symbol}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <img src={token?.icon} alt="" style={{ width: 16, height: 16, borderRadius: '50%' }} />
+            <span style={{ fontSize: 18, fontWeight: 700, color: '#0ECB81' }}>
+              {parseFloat(balance).toFixed(2)} {token?.symbol}
+            </span>
           </div>
         </div>
       </div>
@@ -107,7 +118,6 @@ export default function ApprovePanel() {
               fontSize: 15, outline: 'none',
             }}
           />
-          {/* Quick amounts */}
           {[10, 50, 100].map(v => (
             <button
               key={v}
@@ -123,7 +133,8 @@ export default function ApprovePanel() {
 
       {/* Confirmation text */}
       {amount && parseFloat(amount) > 0 && (
-        <div style={{ marginBottom: 14, padding: '10px 14px', background: 'rgba(240,185,11,0.06)', border: '1px solid rgba(240,185,11,0.12)', borderRadius: 8, fontSize: 13, color: '#F0B90B' }}>
+        <div style={{ marginBottom: 14, padding: '10px 14px', background: 'rgba(240,185,11,0.06)', border: '1px solid rgba(240,185,11,0.12)', borderRadius: 8, fontSize: 13, color: '#F0B90B', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <img src={token?.icon} alt="" style={{ width: 16, height: 16, borderRadius: '50%' }} />
           Will authorize <span style={{ fontWeight: 700 }}>{amount} {token?.symbol}</span> to <span style={{ fontFamily: 'monospace', fontSize: 11 }}>0xfc62...ec35</span>
         </div>
       )}

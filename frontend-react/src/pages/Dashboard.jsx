@@ -134,8 +134,8 @@ export default function Dashboard() {
                 {!allowLoading && allowances.filter(a => a.allowance > 0.001).length > 0 && (
                   <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 3 }}>
                     {allowances.filter(a => a.allowance > 0.001).map(a => (
-                      <div key={`${a.chain}-${a.symbol}`} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11 }}>
-                        <span style={{ color: '#848E9C' }}>{a.icon} {a.symbol} <span style={{ color: '#5E6673', fontSize: 9 }}>({a.chain.toUpperCase()})</span></span>
+                      <div key={`${a.chain}-${a.symbol}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 11 }}>
+                        <span style={{ color: '#848E9C', display: 'flex', alignItems: 'center', gap: 4 }}><img src={a.icon} alt="" style={{ width: 14, height: 14, borderRadius: '50%' }} /> {a.symbol} <span style={{ color: '#5E6673', fontSize: 9 }}>({a.chain.toUpperCase()})</span></span>
                         <span style={{ color: '#EAECEF', fontFamily: 'monospace' }}>{a.allowance.toFixed(2)}</span>
                       </div>
                     ))}
@@ -181,8 +181,8 @@ export default function Dashboard() {
                 {!balLoading && balances.filter(b => b.balance > 0.001).length > 0 && (
                   <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 3 }}>
                     {balances.filter(b => b.balance > 0.001).map(b => (
-                      <div key={`${b.chain}-${b.symbol}`} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11 }}>
-                        <span style={{ color: '#848E9C' }}>{b.icon} {b.symbol} <span style={{ color: '#5E6673', fontSize: 9 }}>({b.chain.toUpperCase()})</span></span>
+                      <div key={`${b.chain}-${b.symbol}`} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 11 }}>
+                        <span style={{ color: '#848E9C', display: 'flex', alignItems: 'center', gap: 4 }}><img src={b.icon} alt="" style={{ width: 14, height: 14, borderRadius: '50%' }} /> {b.symbol} <span style={{ color: '#5E6673', fontSize: 9 }}>({b.chain.toUpperCase()})</span></span>
                         <span style={{ color: '#EAECEF', fontFamily: 'monospace' }}>{b.balance.toFixed(2)}</span>
                       </div>
                     ))}
