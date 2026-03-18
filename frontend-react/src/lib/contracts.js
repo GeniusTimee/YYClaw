@@ -5,25 +5,25 @@ export const CHAINS = {
   bsc: {
     id: 56, name: 'BSC', symbol: 'BNB',
     rpc: 'https://bsc-dataseed.binance.org/',
-    icon: 'https://bin.bnbstatic.com/static/assets/logos/BNB.png',
+    icon: '/icons/bnb.png',
   },
   base: {
     id: 8453, name: 'Base', symbol: 'ETH',
     rpc: 'https://mainnet.base.org',
-    icon: 'https://bin.bnbstatic.com/images/web3-data/public/token/logos/161D614249CED48A6D23396826F7107B.jpg',
+    icon: '/icons/base.jpg',
   },
 }
 
 export const TOKENS = {
   bsc: [
-    { symbol: 'USD1', address: '0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d', decimals: 18, icon: 'https://bin.bnbstatic.com/static/assets/logos/USD1.png' },
-    { symbol: 'USDT', address: '0x55d398326f99059ff775485246999027b3197955', decimals: 18, icon: 'https://bin.bnbstatic.com/static/assets/logos/USDT.png' },
-    { symbol: 'USDC', address: '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d', decimals: 18, icon: 'https://bin.bnbstatic.com/static/assets/logos/USDC.png' },
-    { symbol: 'U', address: '0xcE24439F2D9C6a2289F741120FE202248B666666', decimals: 18, icon: 'https://bin.bnbstatic.com/static/assets/logos/U.png' },
+    { symbol: 'USD1', address: '0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d', decimals: 18, icon: '/icons/usd1.png' },
+    { symbol: 'USDT', address: '0x55d398326f99059ff775485246999027b3197955', decimals: 18, icon: '/icons/usdt.png' },
+    { symbol: 'USDC', address: '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d', decimals: 18, icon: '/icons/usdc.png' },
+    { symbol: 'U', address: '0xcE24439F2D9C6a2289F741120FE202248B666666', decimals: 18, icon: '/icons/u.png' },
   ],
   base: [
-    { symbol: 'USDC', address: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', decimals: 6, icon: 'https://bin.bnbstatic.com/static/assets/logos/USDC.png' },
-    { symbol: 'USDT', address: '0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2', decimals: 6, icon: 'https://bin.bnbstatic.com/static/assets/logos/USDT.png' },
+    { symbol: 'USDC', address: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', decimals: 6, icon: '/icons/usdc.png' },
+    { symbol: 'USDT', address: '0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2', decimals: 6, icon: '/icons/usdt.png' },
   ],
 }
 

@@ -10,8 +10,8 @@ const modal = {
 }
 
 const WALLET_ICONS = {
-  metamask: 'https://upload.wikimedia.org/wikipedia/commons/3/36/MetaMask_Fox.svg',
-  okx: 'https://bin.bnbstatic.com/images/web3-data/public/token/logos/500F3FF6D63DC8C81D1B19D935391F69.jpg',
+  metamask: '/icons/metamask.svg',
+  okx: '/icons/okx.jpg',
 }
 
 function getWalletIcon(name) {
