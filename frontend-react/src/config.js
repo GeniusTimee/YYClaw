@@ -1,3 +1,5 @@
+export const API_BASE = import.meta.env.VITE_API_BASE || '';
+
 export const CHAINS = {
   bsc:  { id: 56,   hex: '0x38',   name: 'BSC',  rpc: 'https://bsc-dataseed.binance.org/', symbol: 'BNB' },
   base: { id: 8453, hex: '0x2105', name: 'Base', rpc: 'https://mainnet.base.org',          symbol: 'ETH' },

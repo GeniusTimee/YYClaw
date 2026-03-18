@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { API_BASE } from '../config'
 
 const card = {
   background: '#181A20', border: '1px solid #2B3139', borderRadius: 12, padding: 24,
@@ -17,7 +18,7 @@ export default function PriceTable() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/v1/models')
+    fetch(`${API_BASE}/v1/models`)
       .then(r => r.json())
       .then(d => { setModels((d.data || []).sort((a, b) => b.price_per_call - a.price_per_call)); setLoading(false) })
       .catch(() => setLoading(false))

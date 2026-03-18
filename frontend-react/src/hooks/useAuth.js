@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react'
 import { useAccount, useSignMessage } from 'wagmi'
+import { API_BASE } from '../config'
 
 const TOKEN_KEY = 'yyclaw_token'
 
@@ -15,11 +16,11 @@ export function useAuth() {
     setLoading(true)
     setError(null)
     try {
-      const nonceRes = await fetch(`/api/auth/nonce?address=${address}`)
+      const nonceRes = await fetch(`${API_BASE}/api/auth/nonce?address=${address}`)
       const { nonce } = await nonceRes.json()
       const message = `YYClaw Login\nAddress: ${address}\nNonce: ${nonce}`
       const signature = await signMessageAsync({ message })
-      const verifyRes = await fetch('/api/auth/verify', {
+      const verifyRes = await fetch(`${API_BASE}/api/auth/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ address, signature, chain: 'bsc' }),
@@ -44,7 +45,7 @@ export function useAuth() {
 
   const authFetch = useCallback(async (url, opts = {}) => {
     const t = localStorage.getItem(TOKEN_KEY)
-    const res = await fetch(url, {
+    const res = await fetch(`${API_BASE}${url}`, {
       ...opts,
       headers: {
         ...(opts.headers || {}),

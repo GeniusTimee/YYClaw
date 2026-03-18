@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { ethers } from 'ethers'
-import { CHAINS, TOKENS, PAYMENT_ADDRESS, ERC20_ABI } from '../config'
+import { CHAINS, TOKENS, PAYMENT_ADDRESS, ERC20_ABI, API_BASE } from '../config'
 
 const WalletContext = createContext(null)
 
@@ -18,7 +18,7 @@ export function WalletProvider({ children }) {
   useEffect(() => {
     const saved = localStorage.getItem('yyclaw_token')
     if (!saved) return
-    fetch('/api/auth/me', { headers: { Authorization: 'Bearer ' + saved } })
+    fetch(`${API_BASE}/api/auth/me`, { headers: { Authorization: 'Bearer ' + saved } })
       .then(r => r.json())
       .then(u => {
         if (u.wallet_address) {
@@ -91,13 +91,13 @@ export function WalletProvider({ children }) {
     try { await provider.send('wallet_switchEthereumChain', [{ chainId: c.hex }]) } catch {}
     const signer = await provider.getSigner()
     const addr = await signer.getAddress()
-    const nonceRes = await fetch('/api/auth/nonce', {
+    const nonceRes = await fetch(`${API_BASE}/api/auth/nonce`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ wallet_address: addr })
     }).then(r => r.json())
     const msg = `YYClaw Login\nAddress: ${addr}\nNonce: ${nonceRes.nonce}`
     const sig = await signer.signMessage(msg)
-    const verifyRes = await fetch('/api/auth/verify', {
+    const verifyRes = await fetch(`${API_BASE}/api/auth/verify`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ wallet_address: addr, signature: sig, chain })
     }).then(r => r.json())
