@@ -1,8 +1,9 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useAccount, useSignMessage } from 'wagmi'
 import { API_BASE } from '../config'
 
 const TOKEN_KEY = 'yyclaw_token'
+const ADDR_KEY = 'yyclaw_address'
 
 export function useAuth() {
   const { address } = useAccount()
@@ -10,6 +11,16 @@ export function useAuth() {
   const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY))
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+
+  // Clear token if wallet address changed
+  useEffect(() => {
+    const savedAddr = localStorage.getItem(ADDR_KEY)
+    if (address && savedAddr && savedAddr.toLowerCase() !== address.toLowerCase()) {
+      localStorage.removeItem(TOKEN_KEY)
+      setToken(null)
+    }
+    if (address) localStorage.setItem(ADDR_KEY, address)
+  }, [address])
 
   const login = useCallback(async () => {
     if (!address) return
