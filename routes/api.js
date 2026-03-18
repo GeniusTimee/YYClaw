@@ -20,7 +20,13 @@ router.post('/chat/completions', requireApiKey, async (req, res) => {
   const { model, stream } = req.body;
   if (!model) return res.status(400).json({ error: { message: 'model required', type: 'invalid_request' } });
 
-  const modelRow = db.prepare('SELECT * FROM models WHERE name = ? AND enabled = 1').get(model);
+  // Auto-append -fixed if user sends without it
+  let modelName = model;
+  let modelRow = db.prepare('SELECT * FROM models WHERE name = ? AND enabled = 1').get(modelName);
+  if (!modelRow && !modelName.endsWith('-fixed')) {
+    modelName = modelName + '-fixed';
+    modelRow = db.prepare('SELECT * FROM models WHERE name = ? AND enabled = 1').get(modelName);
+  }
   if (!modelRow) return res.status(404).json({ error: { message: `Model ${model} not found`, type: 'invalid_request' } });
   if (!modelRow.upstream_url || !modelRow.upstream_key) {
     return res.status(503).json({ error: { message: 'Model not configured', type: 'service_error' } });
@@ -103,7 +109,7 @@ router.get('/models', (req, res) => {
   res.json({
     object: 'list',
     data: models.map(m => ({
-      id: m.name,
+      id: m.name.replace(/-fixed$/, ''),
       object: 'model',
       created: 1700000000,
       owned_by: 'yyclaw',

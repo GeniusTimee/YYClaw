@@ -55,7 +55,7 @@ export default function CallLogs({ authFetch }) {
             <tbody>
               {logs.map((log, i) => (
                 <tr key={i} style={{ borderBottom: i < logs.length - 1 ? '1px solid #2B3139' : 'none' }}>
-                  <td style={{ padding: '10px 12px', color: '#EAECEF', fontFamily: 'monospace' }}>{log.model}</td>
+                  <td style={{ padding: '10px 12px', color: '#EAECEF', fontFamily: 'monospace' }}>{log.model.replace(/-fixed$/, '')}</td>
                   <td style={{ padding: '10px 12px', color: '#F0B90B' }}>${log.cost}</td>
                   <td style={{ padding: '10px 12px' }}>
                     <span style={{
