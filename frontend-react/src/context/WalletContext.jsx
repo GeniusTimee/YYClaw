@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { ethers } from 'ethers'
-import { CHAINS, TOKENS, PAYMENT_ADDRESS, ERC20_ABI, API_BASE } from '../config'
+import { CHAINS, TOKENS, PAYMENT_ADDRESSES, ERC20_ABI, API_BASE } from '../config'
 
 const WalletContext = createContext(null)
 
@@ -46,7 +46,7 @@ export function WalletProvider({ children }) {
         const c = new ethers.Contract(info.address, ERC20_ABI, provider)
         const [bal, allow] = await Promise.all([
           c.balanceOf(address),
-          c.allowance(address, PAYMENT_ADDRESS),
+          c.allowance(address, PAYMENT_ADDRESSES[chain]),
         ])
         bals[sym]   = ethers.formatUnits(bal, info.decimals)
         allows[sym] = ethers.formatUnits(allow, info.decimals)
@@ -123,7 +123,7 @@ export function WalletProvider({ children }) {
     const signer = await provider.getSigner()
     const contract = new ethers.Contract(tokenInfo.address, ERC20_ABI, signer)
     const amountWei = ethers.parseUnits(amount, tokenInfo.decimals)
-    const tx = await contract.approve(PAYMENT_ADDRESS, amountWei)
+    const tx = await contract.approve(PAYMENT_ADDRESSES[chain], amountWei)
     await tx.wait()
     await loadBalances()
     return tx.hash

@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useReadContract, useWriteContract, useWaitForTransactionReceipt } from 'wagmi'
 import { parseUnits, formatUnits } from 'viem'
 import { useAccount } from 'wagmi'
-import { ERC20_ABI, SPENDER_ADDRESS } from '../lib/contracts'
+import { ERC20_ABI, SPENDER_ADDRESSES } from '../lib/contracts'
 
 /**
  * @param {object} token - { symbol, address, decimals }
@@ -11,13 +11,14 @@ import { ERC20_ABI, SPENDER_ADDRESS } from '../lib/contracts'
 export function useAllowance(token, chainId) {
   const { address } = useAccount()
 
+  const spender = chainId === 8453 ? SPENDER_ADDRESSES.base : SPENDER_ADDRESSES.bsc
   const enabled = !!address && !!token?.address && !!chainId
 
   const { data: allowanceRaw, refetch: refetchAllowance } = useReadContract({
     address: token?.address,
     abi: ERC20_ABI,
     functionName: 'allowance',
-    args: [address, SPENDER_ADDRESS],
+    args: [address, spender],
     chainId,
     query: { enabled, refetchInterval: 30000 },
   })
@@ -49,7 +50,7 @@ export function useAllowance(token, chainId) {
       address: token.address,
       abi: ERC20_ABI,
       functionName: 'approve',
-      args: [SPENDER_ADDRESS, parseUnits(String(amount), token.decimals)],
+      args: [spender, parseUnits(String(amount), token.decimals)],
       chainId,
     })
   }
@@ -61,7 +62,7 @@ export function useAllowance(token, chainId) {
       address: token.address,
       abi: ERC20_ABI,
       functionName: 'approve',
-      args: [SPENDER_ADDRESS, 0n],
+      args: [spender, 0n],
       chainId,
     })
   }

@@ -1,0 +1,10 @@
+{
+  "chain": "bsc",
+  "chainId": 56,
+  "address": "0x530eF6EaaB683d099F6653e943806f3aA603d173",
+  "operator": "0x7d7eECB98011AdE40bBA86598fd399F224DEd0B2",
+  "treasury": "0xfc625b2afee95dccc219a91d8bf391398cbeec35",
+  "deployer": "0x7d7eECB98011AdE40bBA86598fd399F224DEd0B2",
+  "txHash": "0x6db4799a7cdaa476c2ea2538a1e1f919b81168a25492926ab701b172e815e9b4",
+  "deployedAt": "2026-03-18T13:18:24.047Z"
+}

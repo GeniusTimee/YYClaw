@@ -1,7 +1,7 @@
 import { useReadContracts } from 'wagmi'
 import { formatUnits } from 'viem'
 import { useAccount } from 'wagmi'
-import { ERC20_ABI, TOKENS, CHAINS, SPENDER_ADDRESS } from '../lib/contracts'
+import { ERC20_ABI, TOKENS, CHAINS, SPENDER_ADDRESSES } from '../lib/contracts'
 
 /**
  * Reads allowance for all tokens across all chains.
@@ -15,12 +15,13 @@ export function useAllowances() {
   for (const [chainKey, tokens] of Object.entries(TOKENS)) {
     const chainId = CHAINS[chainKey]?.id
     if (!chainId) continue
+    const spender = SPENDER_ADDRESSES[chainKey]
     for (const token of tokens) {
       calls.push({
         address: token.address,
         abi: ERC20_ABI,
         functionName: 'allowance',
-        args: [address, SPENDER_ADDRESS],
+        args: [address, spender],
         chainId,
       })
       meta.push({ chain: chainKey, chainId, symbol: token.symbol, decimals: token.decimals, icon: token.icon })
