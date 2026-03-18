@@ -1,0 +1,245 @@
+import { useEffect, useState } from 'react'
+import { useAccount } from 'wagmi'
+import { useNavigate } from 'react-router-dom'
+import Navbar from '../components/Navbar'
+import ApprovePanel from '../components/ApprovePanel'
+import PriceTable from '../components/PriceTable'
+import CodeDocs from '../components/CodeDocs'
+import CallLogs from '../components/CallLogs'
+import WalletModal from '../components/WalletModal'
+import { useAuth } from '../hooks/useAuth'
+import { useWalletBalances } from '../hooks/useWalletBalances'
+import { useAllowances } from '../hooks/useAllowances'
+
+const card = {
+  background: '#181A20', border: '1px solid #2B3139', borderRadius: 12, padding: 24,
+}
+
+export default function Dashboard() {
+  const { address, isConnected } = useAccount()
+  const navigate = useNavigate()
+  const { token, login, logout, loading, error, authFetch, isLoggedIn } = useAuth()
+  const { balances, totalUsd, isLoading: balLoading } = useWalletBalances()
+  const { allowances, totalAllowance, isLoading: allowLoading } = useAllowances()
+  const [me, setMe] = useState(null)
+  const [stats, setStats] = useState(null)
+  const [showModal, setShowModal] = useState(false)
+  const [tab, setTab] = useState('overview')
+
+  useEffect(() => {
+    if (!isConnected) { setShowModal(true) }
+  }, [isConnected])
+
+  useEffect(() => {
+    if (isLoggedIn && authFetch) {
+      authFetch('/api/auth/me').then(r => r.json()).then(setMe).catch(() => {})
+      authFetch('/api/billing/stats').then(r => r.json()).then(setStats).catch(() => {})
+    }
+  }, [isLoggedIn, authFetch])
+
+  const totalSpent = stats?.total_spent || 0
+  const remaining = Math.max(totalAllowance - totalSpent, 0)
+
+  const tabs = ['overview', 'authorize', 'logs', 'docs']
+
+  return (
+    <div style={{ background: '#0B0E11', minHeight: '100vh', color: '#EAECEF' }}>
+      <Navbar />
+
+      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '88px 24px 60px' }}>
+        {/* Header */}
+        <div style={{ marginBottom: 32 }}>
+          <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 6 }}>Dashboard</h1>
+          <p style={{ color: '#848E9C', fontSize: 14 }}>
+            {address ? `${address.slice(0, 8)}...${address.slice(-6)}` : 'Not connected'}
+          </p>
+        </div>
+
+        {/* Not connected */}
+        {!isConnected && (
+          <div style={{ ...card, textAlign: 'center', padding: 60 }}>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>🔗</div>
+            <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 12 }}>Connect Your Wallet</h2>
+            <p style={{ color: '#848E9C', marginBottom: 28 }}>Connect a wallet to access your dashboard</p>
+            <button
+              onClick={() => setShowModal(true)}
+              style={{ background: '#F0B90B', color: '#0B0E11', border: 'none', borderRadius: 8, padding: '12px 32px', fontWeight: 700, fontSize: 15, cursor: 'pointer' }}
+            >Connect Wallet</button>
+          </div>
+        )}
+
+        {/* Connected but not logged in */}
+        {isConnected && !isLoggedIn && (
+          <div style={{ ...card, textAlign: 'center', padding: 60 }}>
+            <div style={{ fontSize: 48, marginBottom: 16 }}>✍️</div>
+            <h2 style={{ fontSize: 22, fontWeight: 700, marginBottom: 12 }}>Sign In</h2>
+            <p style={{ color: '#848E9C', marginBottom: 28 }}>Sign a message with your wallet to authenticate</p>
+            {error && <p style={{ color: '#F6465D', marginBottom: 16, fontSize: 14 }}>{error}</p>}
+            <button
+              onClick={login}
+              disabled={loading}
+              style={{ background: '#F0B90B', color: '#0B0E11', border: 'none', borderRadius: 8, padding: '12px 32px', fontWeight: 700, fontSize: 15, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1 }}
+            >{loading ? 'Signing...' : 'Sign In with Wallet'}</button>
+          </div>
+        )}
+
+        {/* Logged in */}
+        {isConnected && isLoggedIn && (
+          <>
+              {/* API Key — standalone prominent card */}
+              <div style={{ ...card, marginBottom: 28, background: 'linear-gradient(135deg, #181A20, #1E2329)', border: '1px solid rgba(240,185,11,0.15)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
+                  <div style={{ flex: 1, minWidth: 240 }}>
+                    <div style={{ fontSize: 12, color: '#848E9C', marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.5 }}>Your API Key</div>
+                    <div style={{
+                      background: '#0B0E11', border: '1px solid #2B3139', borderRadius: 8,
+                      padding: '12px 16px', fontFamily: "'JetBrains Mono', monospace", fontSize: 14,
+                      color: '#F0B90B', wordBreak: 'break-all', letterSpacing: 0.3,
+                    }}>
+                      {me?.api_key || '—'}
+                    </div>
+                    <div style={{ marginTop: 8, fontSize: 12, color: '#5E6673' }}>
+                      Base URL: <span style={{ color: '#848E9C', fontFamily: 'monospace' }}>https://api.yyclaw.com/v1</span>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexShrink: 0, marginTop: 4 }}>
+                    {me?.api_key && (
+                      <button
+                        onClick={() => { navigator.clipboard.writeText(me.api_key) }}
+                        style={{
+                          background: '#F0B90B', color: '#0B0E11', border: 'none', borderRadius: 8,
+                          padding: '10px 20px', fontWeight: 700, fontSize: 13, cursor: 'pointer',
+                        }}
+                      >📋 Copy Key</button>
+                    )}
+                    <button
+                      onClick={() => setTab('docs')}
+                      style={{
+                        background: 'transparent', color: '#F0B90B', border: '1px solid #F0B90B',
+                        borderRadius: 8, padding: '10px 20px', fontWeight: 700, fontSize: 13, cursor: 'pointer',
+                      }}
+                    >⚡ Quick Start</button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Stats row */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16, marginBottom: 28 }}>
+              {/* Authorized (total allowance) */}
+              <div style={card}>
+                <div style={{ fontSize: 12, color: '#848E9C', marginBottom: 6 }}>Authorized</div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: '#F0B90B' }}>
+                  {allowLoading ? '...' : `$${totalAllowance.toFixed(2)}`}
+                </div>
+                {!allowLoading && allowances.filter(a => a.allowance > 0.001).length > 0 && (
+                  <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 3 }}>
+                    {allowances.filter(a => a.allowance > 0.001).map(a => (
+                      <div key={`${a.chain}-${a.symbol}`} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11 }}>
+                        <span style={{ color: '#848E9C' }}>{a.icon} {a.symbol} <span style={{ color: '#5E6673', fontSize: 9 }}>({a.chain.toUpperCase()})</span></span>
+                        <span style={{ color: '#EAECEF', fontFamily: 'monospace' }}>{a.allowance.toFixed(2)}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Spent */}
+              <div style={card}>
+                <div style={{ fontSize: 12, color: '#848E9C', marginBottom: 6 }}>Spent</div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: '#F6465D' }}>
+                  ${totalSpent.toFixed(4)}
+                </div>
+                <div style={{ marginTop: 8, fontSize: 11, color: '#5E6673' }}>
+                  {stats?.total_calls || 0} calls
+                </div>
+              </div>
+
+              {/* Remaining */}
+              <div style={card}>
+                <div style={{ fontSize: 12, color: '#848E9C', marginBottom: 6 }}>Remaining</div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: '#0ECB81' }}>
+                  {allowLoading ? '...' : `$${remaining.toFixed(2)}`}
+                </div>
+                {totalAllowance > 0 && (
+                  <div style={{ marginTop: 8, height: 4, background: '#2B3139', borderRadius: 2, overflow: 'hidden' }}>
+                    <div style={{
+                      height: '100%', borderRadius: 2,
+                      width: `${Math.min((remaining / totalAllowance) * 100, 100)}%`,
+                      background: remaining / totalAllowance > 0.2 ? '#0ECB81' : '#F6465D',
+                      transition: 'width 0.3s',
+                    }} />
+                  </div>
+                )}
+              </div>
+
+              {/* Wallet Balance */}
+              <div style={card}>
+                <div style={{ fontSize: 12, color: '#848E9C', marginBottom: 6 }}>Wallet Balance</div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: '#EAECEF' }}>
+                  {balLoading ? '...' : `$${totalUsd.toFixed(2)}`}
+                </div>
+                {!balLoading && balances.filter(b => b.balance > 0.001).length > 0 && (
+                  <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 3 }}>
+                    {balances.filter(b => b.balance > 0.001).map(b => (
+                      <div key={`${b.chain}-${b.symbol}`} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11 }}>
+                        <span style={{ color: '#848E9C' }}>{b.icon} {b.symbol} <span style={{ color: '#5E6673', fontSize: 9 }}>({b.chain.toUpperCase()})</span></span>
+                        <span style={{ color: '#EAECEF', fontFamily: 'monospace' }}>{b.balance.toFixed(2)}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+            </div>
+
+            {/* Tabs */}
+            <div style={{ display: 'flex', gap: 4, marginBottom: 24, borderBottom: '1px solid #2B3139', paddingBottom: 0 }}>
+              {tabs.map(t => (
+                <button
+                  key={t}
+                  onClick={() => setTab(t)}
+                  style={{
+                    background: 'none', border: 'none', cursor: 'pointer',
+                    padding: '10px 20px', fontSize: 14, fontWeight: 600,
+                    color: tab === t ? '#F0B90B' : '#848E9C',
+                    borderBottom: tab === t ? '2px solid #F0B90B' : '2px solid transparent',
+                    textTransform: 'capitalize', transition: 'color 0.2s',
+                  }}
+                >{t}</button>
+              ))}
+            </div>
+
+            {/* Tab content */}
+            {tab === 'overview' && (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 20 }}>
+                <ApprovePanel />
+                <PriceTable />
+              </div>
+            )}
+
+            {tab === 'authorize' && (
+              <div style={{ maxWidth: 520 }}>
+                <ApprovePanel />
+                <div style={{ ...card, marginTop: 20 }}>
+                  <h3 style={{ fontSize: 15, fontWeight: 700, marginBottom: 12 }}>How it works</h3>
+                  <ol style={{ paddingLeft: 20, color: '#848E9C', fontSize: 14, lineHeight: 2 }}>
+                    <li>Approve a token allowance to our contract</li>
+                    <li>We deduct per-call fees from your allowance</li>
+                    <li>Revoke anytime to stop further charges</li>
+                    <li>Your funds stay in your wallet until used</li>
+                  </ol>
+                </div>
+              </div>
+            )}
+
+            {tab === 'logs' && <CallLogs authFetch={authFetch} />}
+
+            {tab === 'docs' && <CodeDocs apiKey={me?.api_key} />}
+          </>
+        )}
+      </div>
+
+      {showModal && <WalletModal onClose={() => setShowModal(false)} />}
+    </div>
+  )
+}

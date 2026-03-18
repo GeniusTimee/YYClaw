@@ -1,0 +1,52 @@
+.navbar {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; gap: 24px;
+  padding: 0 32px; height: 64px;
+  background: rgba(11,14,17,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+
+.nav-logo {
+  font-size: 20px; font-weight: 800;
+  background: linear-gradient(135deg, var(--yellow), var(--yellow2));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; white-space: nowrap;
+}
+
+.nav-links { display: flex; gap: 24px; flex: 1; }
+.nav-links a { font-size: 14px; font-weight: 500; }
+
+.nav-right { display: flex; align-items: center; gap: 12px; margin-left: auto; }
+
+.chain-switcher { display: flex; gap: 4px; }
+.chain-btn {
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text2); padding: 6px 14px; border-radius: 6px;
+  font-size: 13px; font-weight: 600; cursor: pointer; transition: all .2s;
+}
+.chain-btn.active { border-color: var(--yellow); color: var(--yellow); background: rgba(240,185,11,0.08); }
+.chain-btn:hover { border-color: var(--yellow); }
+
+.btn-connect {
+  background: linear-gradient(135deg, var(--yellow), #E8A800);
+  color: #0B0E11; border: none; padding: 8px 20px;
+  border-radius: 8px; font-weight: 700; font-size: 14px;
+  cursor: pointer; transition: all .2s;
+  box-shadow: 0 0 20px rgba(240,185,11,0.2);
+  display: flex; align-items: center; gap: 6px;
+}
+.btn-connect:hover { box-shadow: 0 0 32px rgba(240,185,11,0.4); transform: translateY(-1px); }
+.btn-connect.connected {
+  background: var(--bg3); color: var(--text1);
+  border: 1px solid var(--border);
+  box-shadow: none;
+}
+.btn-connect.connected:hover { border-color: var(--yellow); }
+
+.chain-badge {
+  font-size: 11px; font-weight: 700; padding: 2px 7px;
+  border-radius: 4px; text-transform: uppercase;
+}
+.chain-badge.bsc  { background: rgba(240,185,11,0.15); color: var(--yellow); }
+.chain-badge.base { background: rgba(14,203,129,0.15); color: var(--green); }
