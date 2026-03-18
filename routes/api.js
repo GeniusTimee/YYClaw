@@ -140,7 +140,7 @@ router.post('/chat/completions', detectPaymentMode, async (req, res) => {
       res.setHeader('Connection', 'keep-alive');
 
       const upstream = await axios.post(
-        `${modelRow.upstream_url}/v1/chat/completions`,
+        `${modelRow.upstream_url}/chat/completions`,
         upstreamBody,
         { headers: { 'Authorization': `Bearer ${modelRow.upstream_key}`, 'Content-Type': 'application/json' }, responseType: 'stream' }
       );
@@ -152,7 +152,7 @@ router.post('/chat/completions', detectPaymentMode, async (req, res) => {
       });
     } else {
       const upstream = await axios.post(
-        `${modelRow.upstream_url}/v1/chat/completions`,
+        `${modelRow.upstream_url}/chat/completions`,
         upstreamBody,
         { headers: { 'Authorization': `Bearer ${modelRow.upstream_key}`, 'Content-Type': 'application/json' } }
       );
