@@ -29,13 +29,18 @@ function isBinance(name) {
 }
 
 function sortConnectors(connectors) {
-  return [...connectors].sort((a, b) => {
-    const aIsBinance = isBinance(a.name)
-    const bIsBinance = isBinance(b.name)
-    if (aIsBinance && !bIsBinance) return -1
-    if (!aIsBinance && bIsBinance) return 1
-    return 0
-  })
+  // Filter out "Injected" connector, sort Binance first, WalletConnect last
+  return [...connectors]
+    .filter(c => c.name.toLowerCase() !== 'injected')
+    .sort((a, b) => {
+      const aName = a.name.toLowerCase()
+      const bName = b.name.toLowerCase()
+      if (isBinance(a.name) && !isBinance(b.name)) return -1
+      if (!isBinance(a.name) && isBinance(b.name)) return 1
+      if (aName.includes('walletconnect') && !bName.includes('walletconnect')) return 1
+      if (!aName.includes('walletconnect') && bName.includes('walletconnect')) return -1
+      return 0
+    })
 }
 
 export default function WalletModal({ onClose }) {
