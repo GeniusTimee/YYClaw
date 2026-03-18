@@ -1,5 +1,5 @@
 // ─── Token Registry ────────────────────────────────────────
-export const SPENDER_ADDRESS = '0xfc625b2afee95dccc219a91d8bf391398cbeec35'
+export const SPENDER_ADDRESS = '0x7d7eECB98011AdE40bBA86598fd399F224DEd0B2'
 
 export const CHAINS = {
   bsc: {
