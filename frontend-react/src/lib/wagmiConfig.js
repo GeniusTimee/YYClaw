@@ -26,34 +26,32 @@ const base = {
   },
 }
 
-// Binance Web3 Wallet connector — detects window.BinanceChain or Binance injected provider
+// Detect Binance Web3 Wallet provider
+function getBinanceProvider() {
+  if (typeof window === 'undefined') return undefined
+  if (window.ethereum?.isBinance) return window.ethereum
+  if (window.ethereum?.providers) {
+    return window.ethereum.providers.find(p => p.isBinance)
+  }
+  if (window.BinanceChain) return window.BinanceChain
+  return undefined
+}
+
+// Binance Web3 Wallet — uses multiAddressConnect via standard EIP-1193
 const binanceWallet = injected({
   target: {
-    id: 'binanceWallet',
+    id: 'binanceWeb3Wallet',
     name: 'Binance Web3 Wallet',
-    provider: () => {
-      if (typeof window === 'undefined') return undefined
-      // Binance Web3 Wallet injects as window.BinanceChain or via ethereum provider with isBinance
-      if (window.BinanceChain) return window.BinanceChain
-      if (window.ethereum?.isBinance) return window.ethereum
-      // Binance app also injects via providers array
-      if (window.ethereum?.providers) {
-        const binance = window.ethereum.providers.find(p => p.isBinance)
-        if (binance) return binance
-      }
-      return undefined
-    },
+    provider: getBinanceProvider,
   },
 })
 
 export const wagmiConfig = createConfig({
   chains: [bsc, base, mainnet],
+  multiInjectedProviderDiscovery: false, // Prevent duplicate injected wallets
   connectors: [
     binanceWallet,
     metaMask(),
-    injected({
-      target: 'okxWallet',
-    }),
     walletConnect({
       projectId: '4c5b02dbb1e24040e8e5e0e36a8e3cb1',
       metadata: {
