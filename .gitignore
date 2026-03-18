@@ -3,3 +3,4 @@ node_modules/
 .pid-gateway
 *.db
 .pid-admin
+.env
