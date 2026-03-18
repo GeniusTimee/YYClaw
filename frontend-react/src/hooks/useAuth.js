@@ -56,6 +56,7 @@ export function useAuth() {
 
   const authFetch = useCallback(async (url, opts = {}) => {
     const t = localStorage.getItem(TOKEN_KEY)
+    if (!t) throw new Error('Not logged in')
     const res = await fetch(`${API_BASE}${url}`, {
       ...opts,
       headers: {
@@ -63,7 +64,8 @@ export function useAuth() {
         Authorization: `Bearer ${t}`,
       },
     })
-    if (res.status === 401) {
+    // Only logout on 401 for auth endpoints, not billing/logs
+    if (res.status === 401 && url.includes('/api/auth/')) {
       logout()
       throw new Error('Unauthorized')
     }
