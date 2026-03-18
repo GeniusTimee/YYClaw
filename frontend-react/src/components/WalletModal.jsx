@@ -12,13 +12,27 @@ const modal = {
 const WALLET_ICONS = {
   metamask: '/icons/metamask.svg',
   okx: '/icons/okx.jpg',
+  binance: '/icons/bnb.png',
 }
 
 function getWalletIcon(name) {
   const n = name.toLowerCase()
+  if (n.includes('binance')) return WALLET_ICONS.binance
   if (n.includes('metamask')) return WALLET_ICONS.metamask
   if (n.includes('okx')) return WALLET_ICONS.okx
   return null
+}
+
+function sortConnectors(connectors) {
+  return [...connectors].sort((a, b) => {
+    const aName = a.name.toLowerCase()
+    const bName = b.name.toLowerCase()
+    const aIsBinance = aName.includes('binance')
+    const bIsBinance = bName.includes('binance')
+    if (aIsBinance && !bIsBinance) return -1
+    if (!aIsBinance && bIsBinance) return 1
+    return 0
+  })
 }
 
 export default function WalletModal({ onClose }) {
@@ -32,7 +46,7 @@ export default function WalletModal({ onClose }) {
           <button onClick={onClose} style={{ background: 'none', border: 'none', color: '#848E9C', fontSize: 22, cursor: 'pointer' }}>×</button>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {connectors.map(connector => {
+          {sortConnectors(connectors).map(connector => {
             const icon = getWalletIcon(connector.name) || connector.icon
             return (
               <button
