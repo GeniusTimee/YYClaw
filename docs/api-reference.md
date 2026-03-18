@@ -262,7 +262,82 @@ Returns all enabled models with pricing. **No authentication required.**
 
 ## Billing
 
-All billing endpoints require JWT authentication.
+### Get Balance (API Key)
+
+```
+GET /v1/balance
+```
+
+Returns on-chain allowance, spent, remaining credit, call count, per-chain breakdown. **Uses API key auth** (no JWT needed).
+
+**Headers:**
+```
+Authorization: Bearer sk-yy-YOUR_API_KEY
+```
+
+**Response `200`:**
+```json
+{
+  "balance": 50.00,
+  "spent": 2.34,
+  "remaining": 47.66,
+  "calls": 28,
+  "chains": { "bsc": 50.00, "base": 0 },
+  "wallet": "0xabc...def"
+}
+```
+
+| Field | Description |
+|-------|-------------|
+| `balance` | Total on-chain allowance across all chains |
+| `spent` | Total spent (successful calls only) |
+| `remaining` | `balance - spent` |
+| `calls` | Total successful API calls |
+| `chains` | Per-chain allowance breakdown |
+| `wallet` | User's wallet address |
+
+---
+
+### Get Usage & Logs (API Key)
+
+```
+GET /v1/usage?limit=20
+```
+
+Returns total calls, total spent, and recent call logs. **Uses API key auth** (no JWT needed).
+
+**Headers:**
+```
+Authorization: Bearer sk-yy-YOUR_API_KEY
+```
+
+**Query Parameters:**
+
+| Param | Type | Default | Description |
+|-------|------|---------|-------------|
+| `limit` | number | `20` | Number of logs to return (max 100) |
+
+**Response `200`:**
+```json
+{
+  "total_calls": 28,
+  "total_spent": 2.34,
+  "logs": [
+    {
+      "model": "gemini-3-flash-fixed",
+      "cost": 0.02,
+      "status": "success:0xabc123...",
+      "created_at": 1710000000
+    }
+  ]
+}
+```
+
+---
+
+### Get Balance (JWT)
+
+All following billing endpoints require JWT authentication.
 
 **Headers:**
 ```

@@ -20,7 +20,13 @@ clawhub install yyclaw
 
 This downloads the skill and places it in `~/.openclaw/workspace/skills/yyclaw/`.
 
-### Option B: Manual
+### Option B: GitHub Clone
+
+```bash
+git clone https://github.com/GeniusTimee/yyclaw-skill ~/.openclaw/workspace/skills/yyclaw
+```
+
+### Option C: Manual
 
 Copy the `skill/` directory from the YYClaw repo:
 
