@@ -26,29 +26,31 @@ const base = {
   },
 }
 
-// Detect Binance Web3 Wallet provider
-function getBinanceProvider() {
-  if (typeof window === 'undefined') return undefined
-  if (window.ethereum?.isBinance) return window.ethereum
-  if (window.ethereum?.providers) {
-    return window.ethereum.providers.find(p => p.isBinance)
-  }
-  if (window.BinanceChain) return window.BinanceChain
-  return undefined
-}
-
-// Binance Web3 Wallet — uses multiAddressConnect via standard EIP-1193
+// Binance Web3 Wallet — in Binance App, window.ethereum IS the Binance provider
 const binanceWallet = injected({
   target: {
     id: 'binanceWeb3Wallet',
     name: 'Binance Web3 Wallet',
-    provider: getBinanceProvider,
+    provider: () => {
+      if (typeof window === 'undefined') return undefined
+      // Check for explicit Binance provider
+      if (window.ethereum?.isBinance) return window.ethereum
+      if (window.ethereum?.providers) {
+        const bp = window.ethereum.providers.find(p => p.isBinance)
+        if (bp) return bp
+      }
+      if (window.BinanceChain) return window.BinanceChain
+      // In Binance App DApp browser, window.ethereum is the Binance provider
+      // but may not have isBinance flag — fall back to it
+      if (window.ethereum) return window.ethereum
+      return undefined
+    },
   },
 })
 
 export const wagmiConfig = createConfig({
   chains: [bsc, base, mainnet],
-  multiInjectedProviderDiscovery: false, // Prevent duplicate injected wallets
+  multiInjectedProviderDiscovery: false,
   connectors: [
     binanceWallet,
     metaMask(),
