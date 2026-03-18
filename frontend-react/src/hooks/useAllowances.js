@@ -29,7 +29,7 @@ export function useAllowances() {
 
   const { data, isLoading, refetch } = useReadContracts({
     contracts: calls,
-    query: { enabled: !!address, refetchInterval: 10000 },
+    query: { enabled: !!address, refetchInterval: 30000 },
   })
 
   const allowances = meta.map((m, i) => {

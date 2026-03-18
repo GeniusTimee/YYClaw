@@ -19,7 +19,7 @@ export function useAllowance(token, chainId) {
     functionName: 'allowance',
     args: [address, SPENDER_ADDRESS],
     chainId,
-    query: { enabled, refetchInterval: 10000 },
+    query: { enabled, refetchInterval: 30000 },
   })
 
   const { data: balanceRaw, refetch: refetchBalance } = useReadContract({
@@ -28,7 +28,7 @@ export function useAllowance(token, chainId) {
     functionName: 'balanceOf',
     args: [address],
     chainId,
-    query: { enabled, refetchInterval: 10000 },
+    query: { enabled, refetchInterval: 30000 },
   })
 
   const { writeContract, data: txHash, isPending, reset } = useWriteContract()

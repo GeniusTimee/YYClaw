@@ -33,7 +33,7 @@ export const wagmiConfig = createConfig({
     walletConnect({ projectId: 'YOUR_WC_PROJECT_ID' }),
   ],
   transports: {
-    [bsc.id]: http('https://bsc-dataseed.binance.org/'),
+    [bsc.id]: http('https://bsc-dataseed1.ninicoin.io/'),
     [base.id]: http('https://mainnet.base.org'),
     [mainnet.id]: http(),
   },

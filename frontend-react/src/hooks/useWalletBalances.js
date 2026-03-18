@@ -31,7 +31,7 @@ export function useWalletBalances() {
 
   const { data, isLoading, refetch } = useReadContracts({
     contracts: calls,
-    query: { enabled: !!address, refetchInterval: 15000 },
+    query: { enabled: !!address, refetchInterval: 60000 },
   })
 
   const balances = meta.map((m, i) => {
