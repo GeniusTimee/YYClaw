@@ -87,39 +87,50 @@ export default function Dashboard() {
         {isConnected && isLoggedIn && (
           <>
               {/* API Key — standalone prominent card */}
-              <div style={{ ...card, marginBottom: 28, background: 'linear-gradient(135deg, #181A20, #1E2329)', border: '1px solid rgba(240,185,11,0.15)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16 }}>
-                  <div style={{ flex: 1, minWidth: 240 }}>
-                    <div style={{ fontSize: 12, color: '#848E9C', marginBottom: 8, textTransform: 'uppercase', letterSpacing: 0.5 }}>Your API Key</div>
-                    <div style={{
-                      background: '#0B0E11', border: '1px solid #2B3139', borderRadius: 8,
-                      padding: '12px 16px', fontFamily: "'JetBrains Mono', monospace", fontSize: 14,
-                      color: '#F0B90B', wordBreak: 'break-all', letterSpacing: 0.3,
-                    }}>
-                      {me?.api_key || '—'}
-                    </div>
-                    <div style={{ marginTop: 8, fontSize: 12, color: '#5E6673' }}>
-                      Base URL: <span style={{ color: '#848E9C', fontFamily: 'monospace' }}>https://api.yyclaw.com/v1</span>
-                    </div>
+              <div style={{ ...card, marginBottom: 28, background: 'linear-gradient(135deg, #181A20, #1E2329)', border: '1px solid rgba(240,185,11,0.15)', position: 'relative', overflow: 'hidden' }}>
+                {/* Subtle glow */}
+                <div style={{ position: 'absolute', top: -60, right: -60, width: 160, height: 160, background: 'radial-gradient(circle, rgba(240,185,11,0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
+                
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+                  <div style={{ fontSize: 13, color: '#848E9C', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600 }}>Your API Key</div>
+                  <div style={{ fontSize: 11, color: '#5E6673' }}>
+                    Base URL: <span style={{ color: '#848E9C', fontFamily: "'JetBrains Mono', monospace" }}>https://api.yyclaw.com/v1</span>
                   </div>
-                  <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexShrink: 0, marginTop: 4 }}>
-                    {me?.api_key && (
-                      <button
-                        onClick={() => { navigator.clipboard.writeText(me.api_key) }}
-                        style={{
-                          background: '#F0B90B', color: '#0B0E11', border: 'none', borderRadius: 8,
-                          padding: '10px 20px', fontWeight: 700, fontSize: 13, cursor: 'pointer',
-                        }}
-                      >📋 Copy Key</button>
-                    )}
+                </div>
+
+                {/* Key + buttons in one row */}
+                <div style={{ display: 'flex', gap: 10, alignItems: 'stretch' }}>
+                  <div style={{
+                    flex: 1, background: '#0B0E11', border: '1px solid #2B3139', borderRadius: 8,
+                    padding: '12px 16px', fontFamily: "'JetBrains Mono', monospace", fontSize: 13,
+                    color: '#F0B90B', wordBreak: 'break-all', letterSpacing: 0.3,
+                    display: 'flex', alignItems: 'center', lineHeight: 1.5,
+                  }}>
+                    {me?.api_key || '—'}
+                  </div>
+                  {me?.api_key && (
                     <button
-                      onClick={() => setTab('docs')}
-                      style={{
-                        background: 'transparent', color: '#F0B90B', border: '1px solid #F0B90B',
-                        borderRadius: 8, padding: '10px 20px', fontWeight: 700, fontSize: 13, cursor: 'pointer',
+                      onClick={() => {
+                        navigator.clipboard.writeText(me.api_key)
+                        const el = document.getElementById('copy-feedback')
+                        if (el) { el.textContent = 'Copied!'; setTimeout(() => el.textContent = 'Copy', 1200) }
                       }}
-                    >⚡ Quick Start</button>
-                  </div>
+                      id="copy-btn"
+                      style={{
+                        background: '#F0B90B', color: '#0B0E11', border: 'none', borderRadius: 8,
+                        padding: '0 24px', fontWeight: 700, fontSize: 13, cursor: 'pointer',
+                        whiteSpace: 'nowrap', transition: 'background 0.15s',
+                      }}
+                    ><span id="copy-feedback">Copy</span></button>
+                  )}
+                  <button
+                    onClick={() => setTab('docs')}
+                    style={{
+                      background: 'transparent', color: '#F0B90B', border: '1px solid rgba(240,185,11,0.4)',
+                      borderRadius: 8, padding: '0 24px', fontWeight: 700, fontSize: 13, cursor: 'pointer',
+                      whiteSpace: 'nowrap', transition: 'all 0.15s',
+                    }}
+                  >Quick Start</button>
                 </div>
               </div>
 
