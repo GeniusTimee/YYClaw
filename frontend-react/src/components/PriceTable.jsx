@@ -19,7 +19,7 @@ export default function PriceTable() {
   useEffect(() => {
     fetch('/v1/models')
       .then(r => r.json())
-      .then(d => { setModels(d.data || []); setLoading(false) })
+      .then(d => { setModels((d.data || []).sort((a, b) => b.price_per_call - a.price_per_call)); setLoading(false) })
       .catch(() => setLoading(false))
   }, [])
 
