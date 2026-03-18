@@ -114,7 +114,7 @@ export default function Landing() {
           </div>
           <h1 style={{ fontSize: 'clamp(36px, 6vw, 72px)', fontWeight: 800, lineHeight: 1.1, marginBottom: 24, letterSpacing: '-1px' }}>
             The Fastest Way to<br />
-            <span style={{ color: '#F0B90B' }}>Access AI Models</span>
+            <span style={{ background: 'linear-gradient(135deg, #FFF8E1, #F0B90B, #E8A800)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', filter: 'drop-shadow(0 4px 15px rgba(240,185,11,0.15))' }}>Access AI Models</span>
           </h1>
           <p style={{ fontSize: 18, color: '#848E9C', lineHeight: 1.7, marginBottom: 40, maxWidth: 560, margin: '0 auto 40px' }}>
             Connect your wallet, authorize USD1, and start calling 50+ AI models instantly. No credit cards. No KYC. Just code.
