@@ -40,7 +40,7 @@ export default function Dashboard() {
   const totalSpent = stats?.total_spent || 0
   const remaining = Math.max(totalAllowance - totalSpent, 0)
 
-  const tabs = ['overview', 'authorize', 'logs', 'docs']
+  const tabs = ['overview', 'logs', 'docs']
 
   return (
     <div style={{ background: '#0B0E11', minHeight: '100vh', color: '#EAECEF' }}>
@@ -86,57 +86,51 @@ export default function Dashboard() {
         {/* Logged in */}
         {isConnected && isLoggedIn && (
           <>
-              {/* API Key — standalone prominent card */}
-              <div style={{ ...card, marginBottom: 28, background: 'linear-gradient(135deg, #181A20, #1E2329)', border: '1px solid rgba(240,185,11,0.15)', position: 'relative', overflow: 'hidden' }}>
-                {/* Subtle glow */}
-                <div style={{ position: 'absolute', top: -60, right: -60, width: 160, height: 160, background: 'radial-gradient(circle, rgba(240,185,11,0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
-                
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-                  <div style={{ fontSize: 13, color: '#848E9C', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600 }}>Your API Key</div>
-                  <div style={{ fontSize: 11, color: '#5E6673' }}>
-                    Base URL: <span style={{ color: '#848E9C', fontFamily: "'JetBrains Mono', monospace" }}>https://api.yyclaw.com/v1</span>
-                  </div>
-                </div>
-
-                {/* Key + buttons in one row */}
-                <div style={{ display: 'flex', gap: 10, alignItems: 'stretch' }}>
-                  <div style={{
-                    flex: 1, background: '#0B0E11', border: '1px solid #2B3139', borderRadius: 8,
-                    padding: '12px 16px', fontFamily: "'JetBrains Mono', monospace", fontSize: 13,
-                    color: '#F0B90B', wordBreak: 'break-all', letterSpacing: 0.3,
-                    display: 'flex', alignItems: 'center', lineHeight: 1.5,
-                  }}>
-                    {me?.api_key || '—'}
-                  </div>
-                  {me?.api_key && (
-                    <button
-                      onClick={() => {
-                        navigator.clipboard.writeText(me.api_key)
-                        const el = document.getElementById('copy-feedback')
-                        if (el) { el.textContent = 'Copied!'; setTimeout(() => el.textContent = 'Copy', 1200) }
-                      }}
-                      id="copy-btn"
-                      style={{
-                        background: '#F0B90B', color: '#0B0E11', border: 'none', borderRadius: 8,
-                        padding: '0 24px', fontWeight: 700, fontSize: 13, cursor: 'pointer',
-                        whiteSpace: 'nowrap', transition: 'background 0.15s',
-                      }}
-                    ><span id="copy-feedback">Copy</span></button>
-                  )}
-                  <button
-                    onClick={() => setTab('docs')}
-                    style={{
-                      background: 'transparent', color: '#F0B90B', border: '1px solid rgba(240,185,11,0.4)',
-                      borderRadius: 8, padding: '0 24px', fontWeight: 700, fontSize: 13, cursor: 'pointer',
-                      whiteSpace: 'nowrap', transition: 'all 0.15s',
-                    }}
-                  >Quick Start</button>
+            {/* API Key */}
+            <div style={{ ...card, marginBottom: 28, background: 'linear-gradient(135deg, #181A20, #1E2329)', border: '1px solid rgba(240,185,11,0.15)', position: 'relative', overflow: 'hidden' }}>
+              <div style={{ position: 'absolute', top: -60, right: -60, width: 160, height: 160, background: 'radial-gradient(circle, rgba(240,185,11,0.06) 0%, transparent 70%)', pointerEvents: 'none' }} />
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+                <div style={{ fontSize: 13, color: '#848E9C', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600 }}>Your API Key</div>
+                <div style={{ fontSize: 11, color: '#5E6673' }}>
+                  Base URL: <span style={{ color: '#848E9C', fontFamily: "'JetBrains Mono', monospace" }}>https://api.yyclaw.com/v1</span>
                 </div>
               </div>
+              <div style={{ display: 'flex', gap: 10, alignItems: 'stretch' }}>
+                <div style={{
+                  flex: 1, background: '#0B0E11', border: '1px solid #2B3139', borderRadius: 8,
+                  padding: '12px 16px', fontFamily: "'JetBrains Mono', monospace", fontSize: 13,
+                  color: '#F0B90B', wordBreak: 'break-all', letterSpacing: 0.3,
+                  display: 'flex', alignItems: 'center', lineHeight: 1.5,
+                }}>
+                  {me?.api_key || '—'}
+                </div>
+                {me?.api_key && (
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(me.api_key)
+                      const el = document.getElementById('copy-feedback')
+                      if (el) { el.textContent = 'Copied!'; setTimeout(() => el.textContent = 'Copy', 1200) }
+                    }}
+                    style={{
+                      background: '#F0B90B', color: '#0B0E11', border: 'none', borderRadius: 8,
+                      padding: '0 24px', fontWeight: 700, fontSize: 13, cursor: 'pointer',
+                      whiteSpace: 'nowrap',
+                    }}
+                  ><span id="copy-feedback">Copy</span></button>
+                )}
+                <button
+                  onClick={() => setTab('docs')}
+                  style={{
+                    background: 'transparent', color: '#F0B90B', border: '1px solid rgba(240,185,11,0.4)',
+                    borderRadius: 8, padding: '0 24px', fontWeight: 700, fontSize: 13, cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                  }}
+                >Quick Start</button>
+              </div>
+            </div>
 
-              {/* Stats row */}
+            {/* Stats row */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 16, marginBottom: 28 }}>
-              {/* Authorized (total allowance) */}
               <div style={card}>
                 <div style={{ fontSize: 12, color: '#848E9C', marginBottom: 6 }}>Authorized</div>
                 <div style={{ fontSize: 22, fontWeight: 700, color: '#F0B90B' }}>
@@ -154,18 +148,12 @@ export default function Dashboard() {
                 )}
               </div>
 
-              {/* Spent */}
               <div style={card}>
                 <div style={{ fontSize: 12, color: '#848E9C', marginBottom: 6 }}>Spent</div>
-                <div style={{ fontSize: 22, fontWeight: 700, color: '#F6465D' }}>
-                  ${totalSpent.toFixed(4)}
-                </div>
-                <div style={{ marginTop: 8, fontSize: 11, color: '#5E6673' }}>
-                  {stats?.total_calls || 0} calls
-                </div>
+                <div style={{ fontSize: 22, fontWeight: 700, color: '#F6465D' }}>${totalSpent.toFixed(4)}</div>
+                <div style={{ marginTop: 8, fontSize: 11, color: '#5E6673' }}>{stats?.total_calls || 0} calls</div>
               </div>
 
-              {/* Remaining */}
               <div style={card}>
                 <div style={{ fontSize: 12, color: '#848E9C', marginBottom: 6 }}>Remaining</div>
                 <div style={{ fontSize: 22, fontWeight: 700, color: '#0ECB81' }}>
@@ -177,13 +165,11 @@ export default function Dashboard() {
                       height: '100%', borderRadius: 2,
                       width: `${Math.min((remaining / totalAllowance) * 100, 100)}%`,
                       background: remaining / totalAllowance > 0.2 ? '#0ECB81' : '#F6465D',
-                      transition: 'width 0.3s',
                     }} />
                   </div>
                 )}
               </div>
 
-              {/* Wallet Balance */}
               <div style={card}>
                 <div style={{ fontSize: 12, color: '#848E9C', marginBottom: 6 }}>Wallet Balance</div>
                 <div style={{ fontSize: 22, fontWeight: 700, color: '#EAECEF' }}>
@@ -200,11 +186,10 @@ export default function Dashboard() {
                   </div>
                 )}
               </div>
-
             </div>
 
             {/* Tabs */}
-            <div style={{ display: 'flex', gap: 4, marginBottom: 24, borderBottom: '1px solid #2B3139', paddingBottom: 0 }}>
+            <div style={{ display: 'flex', gap: 4, marginBottom: 24, borderBottom: '1px solid #2B3139' }}>
               {tabs.map(t => (
                 <button
                   key={t}
@@ -214,7 +199,7 @@ export default function Dashboard() {
                     padding: '10px 20px', fontSize: 14, fontWeight: 600,
                     color: tab === t ? '#F0B90B' : '#848E9C',
                     borderBottom: tab === t ? '2px solid #F0B90B' : '2px solid transparent',
-                    textTransform: 'capitalize', transition: 'color 0.2s',
+                    textTransform: 'capitalize',
                   }}
                 >{t}</button>
               ))}
@@ -225,21 +210,6 @@ export default function Dashboard() {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: 20 }}>
                 <ApprovePanel />
                 <PriceTable />
-              </div>
-            )}
-
-            {tab === 'authorize' && (
-              <div style={{ maxWidth: 520 }}>
-                <ApprovePanel />
-                <div style={{ ...card, marginTop: 20 }}>
-                  <h3 style={{ fontSize: 15, fontWeight: 700, marginBottom: 12 }}>How it works</h3>
-                  <ol style={{ paddingLeft: 20, color: '#848E9C', fontSize: 14, lineHeight: 2 }}>
-                    <li>Approve a token allowance to our contract</li>
-                    <li>We deduct per-call fees from your allowance</li>
-                    <li>Revoke anytime to stop further charges</li>
-                    <li>Your funds stay in your wallet until used</li>
-                  </ol>
-                </div>
               </div>
             )}
 
