@@ -89,6 +89,8 @@ const translations = {
     spender: 'Spender',
     token: 'Token',
     max: 'MAX',
+    recommended: 'Recommended',
+    walletTerms: 'By connecting, you agree to our Terms of Service',
   },
 
   zh: {
@@ -181,6 +183,8 @@ const translations = {
     spender: '合约地址',
     token: '代币',
     max: '最大',
+    recommended: '推荐',
+    walletTerms: '连接即表示您同意我们的服务条款',
   },
 }
 
