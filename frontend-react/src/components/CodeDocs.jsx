@@ -61,7 +61,7 @@ export default function CodeDocs({ apiKey }) {
           <div style={sectionTitle}>2. Set your API key</div>
           <pre style={codeBlock}>{`# Add to ~/.openclaw/config.yaml or set env var
 export YYCLAW_API_KEY="${key}"
-export YYCLAW_BASE_URL="https://api.yyclaw.com/v1"`}</pre>
+export YYCLAW_BASE_URL="https://crypto.yyclaw.cc/v1"`}</pre>
 
           <div style={sectionTitle}>3. Done — everything routes through YYClaw</div>
           <pre style={codeBlock}>{`# OpenClaw itself uses YYClaw as the provider
@@ -69,7 +69,7 @@ export YYCLAW_BASE_URL="https://api.yyclaw.com/v1"`}</pre>
 # Any app using OPENAI_BASE_URL picks it up automatically
 
 # Verify it works:
-curl https://api.yyclaw.com/v1/models \\
+curl https://crypto.yyclaw.cc/v1/models \\
   -H "Authorization: Bearer ${key}"`}</pre>
 
           <div style={{ ...sectionTitle, marginTop: 24 }}>What gets routed?</div>
@@ -98,7 +98,7 @@ curl https://api.yyclaw.com/v1/models \\
 
 client = OpenAI(
     api_key="${key}",
-    base_url="https://api.yyclaw.com/v1"
+    base_url="https://crypto.yyclaw.cc/v1"
 )
 
 response = client.chat.completions.create(
@@ -116,7 +116,7 @@ print(response.choices[0].message.content)`}</pre>
 
 const client = new OpenAI({
   apiKey: '${key}',
-  baseURL: 'https://api.yyclaw.com/v1'
+  baseURL: 'https://crypto.yyclaw.cc/v1'
 });
 
 const res = await client.chat.completions.create({
@@ -130,7 +130,7 @@ console.log(res.choices[0].message.content);`}</pre>
       {/* cURL */}
       {tab === 'curl' && (
         <div>
-          <pre style={codeBlock}>{`curl https://api.yyclaw.com/v1/chat/completions \\
+          <pre style={codeBlock}>{`curl https://crypto.yyclaw.cc/v1/chat/completions \\
   -H "Authorization: Bearer ${key}" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -151,7 +151,7 @@ console.log(res.choices[0].message.content);`}</pre>
 
           <pre style={codeBlock}>{`# Add to ~/.bashrc, ~/.zshrc, or .env
 export OPENAI_API_KEY="${key}"
-export OPENAI_BASE_URL="https://api.yyclaw.com/v1"
+export OPENAI_BASE_URL="https://crypto.yyclaw.cc/v1"
 
 # Now these all work through YYClaw:
 # - python -c "import openai; ..."
@@ -163,7 +163,7 @@ export OPENAI_BASE_URL="https://api.yyclaw.com/v1"
           <pre style={codeBlock}>{`# ~/.openclaw/config.yaml
 providers:
   yyclaw:
-    url: https://api.yyclaw.com/v1
+    url: https://crypto.yyclaw.cc/v1
     key: ${key}
     models:
       - gemini-3-flash

@@ -6,7 +6,7 @@ YYClaw is a pay-per-call AI gateway supporting Claude and Gemini models. This sk
 ## Configuration
 Set these in your environment or openclaw config:
 - `YYCLAW_API_KEY`: Your YYClaw API key (sk-yy-...)
-- `YYCLAW_BASE_URL`: Gateway URL (default: http://localhost:6700/v1)
+- `YYCLAW_BASE_URL`: Gateway URL (default: https://crypto.yyclaw.cc/v1)
 
 ## Usage
 
@@ -34,7 +34,7 @@ Any OpenAI-compatible client works:
 from openai import OpenAI
 client = OpenAI(
     api_key="sk-yy-YOUR_KEY",
-    base_url="http://your-server:6700/v1"
+    base_url="https://crypto.yyclaw.cc/v1"
 )
 ```
 
@@ -42,7 +42,7 @@ client = OpenAI(
 import OpenAI from 'openai';
 const client = new OpenAI({
   apiKey: 'sk-yy-YOUR_KEY',
-  baseURL: 'http://your-server:6700/v1'
+  baseURL: 'https://crypto.yyclaw.cc/v1'
 });
 ```
 
@@ -56,7 +56,7 @@ const client = new OpenAI({
 | opus | claude-opus-4.6-fixed |
 
 ## Error Codes
-- 402: Insufficient balance — top up at http://your-server:6700/dashboard.html
+- 402: Insufficient balance — top up at https://crypto.yyclaw.cc/dashboard.html
 - 404: Model not found or disabled
 - 503: Model upstream not configured (contact admin)
 
@@ -64,7 +64,7 @@ const client = new OpenAI({
 
 When user asks to use YYClaw or mentions a yyclaw model:
 1. Read YYCLAW_API_KEY from environment or ask user
-2. Set base_url to YYCLAW_BASE_URL (default http://localhost:6700/v1)
+2. Set base_url to YYCLAW_BASE_URL (default https://crypto.yyclaw.cc/v1)
 3. Make OpenAI-compatible API call with the key
 4. If 402 error, inform user to top up balance at the dashboard
 5. If user asks for balance, call GET /api/billing/balance with JWT token

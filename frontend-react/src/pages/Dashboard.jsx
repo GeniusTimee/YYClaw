@@ -92,7 +92,7 @@ export default function Dashboard() {
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
                 <div style={{ fontSize: 13, color: '#848E9C', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 600 }}>Your API Key</div>
                 <div style={{ fontSize: 11, color: '#5E6673' }}>
-                  Base URL: <span style={{ color: '#848E9C', fontFamily: "'JetBrains Mono', monospace" }}>https://api.yyclaw.com/v1</span>
+                  Base URL: <span style={{ color: '#848E9C', fontFamily: "'JetBrains Mono', monospace" }}>https://crypto.yyclaw.cc/v1</span>
                 </div>
               </div>
               <div style={{ display: 'flex', gap: 10, alignItems: 'stretch' }}>
