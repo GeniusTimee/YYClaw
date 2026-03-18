@@ -68,10 +68,35 @@ router.post('/chat/completions', requireApiKey, async (req, res) => {
       res.setHeader('Content-Type', 'text/event-stream');
       res.setHeader('Cache-Control', 'no-cache');
       res.setHeader('Connection', 'keep-alive');
+
+      // Buffer stream to detect upstream errors before charging
+      let streamData = '';
+      let hasError = false;
+
+      upstream.data.on('data', (chunk) => {
+        const text = chunk.toString();
+        streamData += text;
+        // Detect error in stream (upstream returned error JSON or error event)
+        if (streamData.length < 2000) {
+          try {
+            const parsed = JSON.parse(streamData);
+            if (parsed.error) { hasError = true; }
+          } catch {}
+        }
+        // Check for error in SSE data lines
+        if (text.includes('"error"') && text.includes('"message"')) {
+          hasError = true;
+        }
+      });
+
       upstream.data.pipe(res);
 
-      // Charge on-chain after stream completes successfully
+      // Charge on-chain after stream completes — only if no error detected
       upstream.data.on('end', async () => {
+        if (hasError) {
+          logCall(req.user.id, model, price, 'upstream_stream_error');
+          return;
+        }
         const result = await autoCharge(userAddress, price);
         logCall(req.user.id, model, price, result.success ? 'success' : 'charge_failed_after_use', result.txHash);
       });
@@ -84,6 +109,12 @@ router.post('/chat/completions', requireApiKey, async (req, res) => {
         upstreamBody,
         { headers: { 'Authorization': `Bearer ${modelRow.upstream_key}`, 'Content-Type': 'application/json' }, timeout: 60000 }
       );
+
+      // Check if upstream returned an error in the body (some providers return 200 with error JSON)
+      if (upstream.data?.error) {
+        logCall(req.user.id, model, price, 'upstream_error');
+        return res.status(upstream.data.error.status || 502).json({ error: { message: upstream.data.error.message || 'Upstream returned error', type: 'upstream_error' } });
+      }
 
       // ── Step 3: Upstream succeeded → charge on-chain ──────
       const chargeResult = await autoCharge(userAddress, price);
